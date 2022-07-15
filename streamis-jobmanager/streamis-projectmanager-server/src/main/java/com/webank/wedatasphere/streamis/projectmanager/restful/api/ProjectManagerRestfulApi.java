@@ -18,6 +18,7 @@ package com.webank.wedatasphere.streamis.projectmanager.restful.api;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.conf.JobLauncherConfiguration;
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.StreamisFile;
 import com.webank.wedatasphere.streamis.jobmanager.manager.exception.FileException;
 import com.webank.wedatasphere.streamis.jobmanager.manager.exception.FileExceptionManager;
@@ -75,6 +76,9 @@ public class ProjectManagerRestfulApi {
         }
         if (StringUtils.isBlank(projectName)) {
             return Message.error("projectName is null");
+        }
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_UPLOAD().getValue())){
+            return Message.warn("uploading files is not allowed in this environment.");
         }
         if (!projectPrivilegeService.hasEditPrivilege(req,projectName)) return Message.error("the current user has no operation permission");
 

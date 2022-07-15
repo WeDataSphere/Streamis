@@ -17,6 +17,7 @@ package com.webank.wedatasphere.streamis.jobmanager.restful.api;
 
 import com.webank.wedatasphere.streamis.jobmanager.exception.JobException;
 import com.webank.wedatasphere.streamis.jobmanager.exception.JobExceptionManager;
+import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.conf.JobLauncherConfiguration;
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.StreamJobVersion;
 import com.webank.wedatasphere.streamis.jobmanager.manager.project.service.ProjectPrivilegeService;
 import com.webank.wedatasphere.streamis.jobmanager.manager.service.BMLService;
@@ -68,6 +69,9 @@ public class UploadRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         if (files == null || files.size() <= 0) {
             throw JobExceptionManager.createException(30300, "uploaded files");
+        }
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_UPLOAD().getValue())){
+            return Message.warn("uploading files is not allowed in this environment.");
         }
         if (!projectPrivilegeService.hasEditPrivilege(request, projectName)) return Message.error("the current user has no operation permission");
 

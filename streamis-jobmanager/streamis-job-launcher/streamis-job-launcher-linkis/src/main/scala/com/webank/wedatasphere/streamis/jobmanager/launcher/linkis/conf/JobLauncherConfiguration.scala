@@ -10,6 +10,8 @@ object JobLauncherConfiguration {
 
   val FLINK_FETCH_APPLICATION_INFO_MAX_TIMES: CommonVars[Int] = CommonVars("wds.streamis.application.info.fetch.max", 6)
 
+  val SWITCH_UPLOAD: CommonVars[String] = CommonVars.apply("wds.streamis.application.switch.upload", "on")
+
   val FLINK_STATE_DEFAULT_SCHEME: CommonVars[String] = CommonVars("wds.streamis.launch.flink.state.default.scheme", "hdfs")
   /**
    * Support schema protocols to store flink job states
