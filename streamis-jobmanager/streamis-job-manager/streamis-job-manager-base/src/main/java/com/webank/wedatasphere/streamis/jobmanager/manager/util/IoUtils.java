@@ -15,6 +15,7 @@
 
 package com.webank.wedatasphere.streamis.jobmanager.manager.util;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.linkis.common.conf.CommonVars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ public class IoUtils {
 
     public static String generateIOPath(String userName, String projectName, String subDir) {
         String baseIOUrl = IOUrl;
+        subDir = FilenameUtils.normalize(subDir);
         String file = subDir.substring(0,subDir.lastIndexOf("."));
         String dayStr = new SimpleDateFormat(dateFormat_day).format(new Date());
         String timeStr = new SimpleDateFormat(dateFormat_time).format(new Date());
