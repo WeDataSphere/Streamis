@@ -63,7 +63,7 @@ public interface StreamTaskMapper {
      * @param count the max number of task
      * @return
      */
-    List<StreamTask> getEarlierByJobId(@Param("jobId") Long jobId, @Param("count") Integer count);
+//    List<StreamTask> getEarlierByJobId(@Param("jobId") Long jobId, @Param("count") Integer count);
 
     StreamTask getRunningTaskByJobId(@Param("jobId") Long jobId);
 
