@@ -65,13 +65,12 @@ public class UploadRestfulApi {
     public Message uploadJar(HttpServletRequest request,
                              @RequestParam(name = "projectName", required = false) String projectName,
                               @RequestParam(name = "file") List<MultipartFile> files) throws IOException, JobException {
-
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_SANDBOX().getValue())){
+            return Message.warn("Only restrictive querys are allowed in Sandbox(沙箱环境仅允许执行有限的查询操作)");
+        }
         String userName = SecurityFilter.getLoginUsername(request);
         if (files == null || files.size() <= 0) {
             throw JobExceptionManager.createException(30300, "uploaded files");
-        }
-        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_UPLOAD().getValue())){
-            return Message.warn("uploading files is not allowed in this environment.");
         }
         if (!projectPrivilegeService.hasEditPrivilege(request, projectName)) return Message.error("the current user has no operation permission");
 

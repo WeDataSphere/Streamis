@@ -21,6 +21,7 @@ import com.webank.wedatasphere.streamis.jobmanager.exception.JobException;
 import com.webank.wedatasphere.streamis.jobmanager.exception.JobExceptionManager;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.job.JobInfo;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.job.manager.JobLaunchManager;
+import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.conf.JobLauncherConfiguration;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.entity.LogRequestPayload;
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.MetaJsonInfo;
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.StreamJob;
@@ -97,6 +98,9 @@ public class JobRestfulApi {
 
     @RequestMapping(path = "/createOrUpdate", method = RequestMethod.POST)
     public Message createOrUpdate(HttpServletRequest req, @Validated @RequestBody MetaJsonInfo metaJsonInfo) throws Exception {
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_SANDBOX().getValue())){
+            return Message.warn("Only restrictive querys are allowed in Sandbox(沙箱环境仅允许执行有限的查询操作)");
+        }
         String username = SecurityFilter.getLoginUsername(req);
         String projectName = metaJsonInfo.getProjectName();
         if (StringUtils.isBlank(projectName)){

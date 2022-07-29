@@ -69,16 +69,15 @@ public class ProjectManagerRestfulApi {
                            @RequestParam(name = "updateWhenExists", required = false) boolean updateWhenExists,
                            @RequestParam(name = "file") List<MultipartFile> files) throws UnsupportedEncodingException, FileException {
 
-
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_SANDBOX().getValue())){
+            return Message.warn("Only restrictive querys are allowed in Sandbox(沙箱环境仅允许执行有限的查询操作)");
+        }
         String username = SecurityFilter.getLoginUsername(req);
         if (StringUtils.isBlank(version)) {
             return Message.error("version is null");
         }
         if (StringUtils.isBlank(projectName)) {
             return Message.error("projectName is null");
-        }
-        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_UPLOAD().getValue())){
-            return Message.warn("uploading files is not allowed in this environment.");
         }
         if (!projectPrivilegeService.hasEditPrivilege(req,projectName)) return Message.error("the current user has no operation permission");
 
@@ -163,6 +162,9 @@ public class ProjectManagerRestfulApi {
     @RequestMapping(path = "/files/delete", method = RequestMethod.GET)
     public Message delete( HttpServletRequest req, @RequestParam(value = "fileName",required = false) String fileName,
                            @RequestParam(value = "projectName",required = false) String projectName) {
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_SANDBOX().getValue())){
+            return Message.warn("Only restrictive querys are allowed in Sandbox(沙箱环境仅允许执行有限的查询操作)");
+        }
         String username = SecurityFilter.getLoginUsername(req);
         if (!projectPrivilegeService.hasEditPrivilege(req,projectName)) return Message.error("the current user has no operation permission");
 
@@ -172,6 +174,9 @@ public class ProjectManagerRestfulApi {
 
     @RequestMapping(path = "/files/version/delete", method = RequestMethod.GET)
     public Message deleteVersion(HttpServletRequest req, @RequestParam(value = "ids",required = false) String ids) {
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_SANDBOX().getValue())){
+            return Message.warn("Only restrictive querys are allowed in Sandbox(沙箱环境仅允许执行有限的查询操作)");
+        }
         String username = SecurityFilter.getLoginUsername(req);
         List<Long> idList = new ArrayList<>();
         if (!StringUtils.isBlank(ids) && !ArrayUtils.isEmpty(ids.split(","))) {
@@ -192,6 +197,9 @@ public class ProjectManagerRestfulApi {
     @RequestMapping(path = "/files/download", method = RequestMethod.GET)
     public Message download( HttpServletRequest req, HttpServletResponse response, @RequestParam(value = "id",required = false) Long id,
                              @RequestParam(value = "projectName",required = false)String projectName) {
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_SANDBOX().getValue())){
+            return Message.warn("Only restrictive querys are allowed in Sandbox(沙箱环境仅允许执行有限的查询操作)");
+        }
         ProjectFiles projectFiles = projectManagerService.getFile(id, projectName);
         if (projectFiles == null) {
             return Message.error("no such file in this project");
