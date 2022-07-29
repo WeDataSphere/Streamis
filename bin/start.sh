@@ -62,10 +62,10 @@ echo "Begin to start $SERVER_NAME"
 SERVER_BIN=${STREAMIS_INSTALL_HOME}/${SERVER_NAME}/bin
 SERVER_START_CMD="source ~/.bash_profile;cd ${SERVER_BIN}; dos2unix ./* > /dev/null 2>&1; dos2unix ../conf/* > /dev/null 2>&1;sh start-${SERVER_NAME}.sh > /dev/null 2>&1 &"
 
-if [ -n "${SERVER_IP}"  ];then
-    ssh ${SERVER_IP} "${SERVER_START_CMD}"
+if [ -z "${SERVER_IP}" ]||[ "${SERVER_IP}"="127.0.0.1" ];then
+    ssh "${SERVER_START_CMD}"
 else
-    ssh ${local_host} "${SERVER_START_CMD}"
+    ssh ${SERVER_IP} "${SERVER_START_CMD}"
 fi
 isSuccess "End to start $SERVER_NAME"
 echo "<-------------------------------->"
