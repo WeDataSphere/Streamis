@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.entity.JobConfDefinition;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.entity.vo.JobConfDefinitionVo;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.entity.vo.JobConfValueSet;
+import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.conf.JobLauncherConfiguration;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.service.StreamJobConfService;
 import com.webank.wedatasphere.streamis.jobmanager.manager.conf.JobConf;
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.StreamJob;
@@ -127,6 +128,9 @@ public class JobConfRestfulApi {
     public Message saveConfig(@PathVariable("jobId") Long jobId, @RequestBody Map<String, Object> configContent,
                               HttpServletRequest request){
         Message result = Message.ok("success");
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_SANDBOX().getValue())){
+            return Message.warn("uploading files is not allowed in this environment.");
+        }
         try{
             String userName = SecurityFilter.getLoginUsername(request);
             StreamJob streamJob = this.streamJobService.getJobById(jobId);
@@ -170,6 +174,9 @@ public class JobConfRestfulApi {
 
     @RequestMapping(path = {"/add", "/update"}, method = RequestMethod.POST)
     public Message saveConfigTree(@RequestBody JsonNode json, HttpServletRequest req){
+        if(!"on".equalsIgnoreCase(JobLauncherConfiguration.SWITCH_SANDBOX().getValue())){
+            return Message.warn("Only restrictive querys are allowed in Sandbox(沙箱环境仅允许执行有限的查询操作)");
+        }
         Message result = Message.ok("success");
         try{
             String userName = SecurityFilter.getLoginUsername(req);
