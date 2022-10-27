@@ -40,6 +40,11 @@ object JobConf {
   val STREAMIS_JOB_LOG_COLLECT_PATH: CommonVars[String] = CommonVars("wds.streamis.job.log.collect.path", "/api/rest_j/v1/streamis/streamJobManager/log/collect/events")
 
   /**
+   * HDFS files that stream job depends
+   */
+  val STREAMIS_JOB_MATERIAL_HDFS: CommonVars[Boolean] = CommonVars("wds.streamis.job.material.hdfs.files", "")
+
+  /**
    * Enable to use material container
    */
   val STREAMIS_JOB_MATERIAL_CONTAINER_ENABLE: CommonVars[Boolean] = CommonVars("wds.streamis.job.material.container.enable", false)

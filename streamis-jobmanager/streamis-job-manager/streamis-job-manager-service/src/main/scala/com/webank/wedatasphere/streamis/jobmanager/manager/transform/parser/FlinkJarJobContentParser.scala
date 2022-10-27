@@ -14,13 +14,15 @@
  */
 
 package com.webank.wedatasphere.streamis.jobmanager.manager.transform.parser
-import java.util
+import com.webank.wedatasphere.streamis.jobmanager.manager.conf.JobConf
 
-import org.apache.linkis.common.utils.JsonUtils
+import java.util
+import org.apache.linkis.common.utils.{JsonUtils, Utils}
 import org.apache.linkis.manager.label.entity.engine.RunType
 import org.apache.linkis.manager.label.entity.engine.RunType.RunType
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.{StreamJob, StreamJobVersion, StreamisFile}
 import com.webank.wedatasphere.streamis.jobmanager.manager.exception.JobExecuteErrorException
+import com.webank.wedatasphere.streamis.jobmanager.manager.material.StreamFileContainer
 import com.webank.wedatasphere.streamis.jobmanager.manager.transform.entity.{StreamisJarTransformJobContent, StreamisTransformJobContent}
 import org.apache.commons.lang.StringUtils
 import org.springframework.stereotype.Component
@@ -31,7 +33,8 @@ import scala.collection.JavaConverters._
   * Created by enjoyyin on 2021/9/23.
   */
 @Component
-class FlinkJarJobContentParser extends AbstractJobContentParser {
+class FlinkJarJobContentParser extends AbstractFlinkJobContentParser {
+
 
   override def parseTo(job: StreamJob, jobVersion: StreamJobVersion): StreamisTransformJobContent = {
     val transformJobContent = new StreamisJarTransformJobContent
@@ -72,6 +75,25 @@ class FlinkJarJobContentParser extends AbstractJobContentParser {
         }.asJava
         transformJobContent.setResources(parsedResources)
       case _ =>
+    }
+    val hdfsDefaultFiles = JobConf.STREAMIS_JOB_MATERIAL_HDFS.getValue
+    // Find the config file
+    super.getConfigFile(job, jobVersion) match {
+      case configFile: StreamisFile =>
+        transformJobContent.setConfigFile(configFile)
+      case _ =>
+    }
+    // Load all the jars under the file container as dependencies.jars
+    val containerJars = getStreamFileContainer match {
+      case container: StreamFileContainer =>
+        container.getStreamFiles(file => StringUtils.isNotBlank(file.getFileName)
+              && file.getFileName.endsWith(".jar"))
+      case _=> new util.ArrayList[StreamisFile]()
+    }
+    if (!containerJars.isEmpty) {
+       val dependencyJars = Option(transformJobContent.getDependencyJars).getOrElse(new util.ArrayList[StreamisFile]())
+       dependencyJars.addAll(containerJars)
+       transformJobContent.setDependencyJars(dependencyJars)
     }
     transformJobContent
   }

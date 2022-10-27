@@ -20,11 +20,16 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 
 public class ZipHelper {
@@ -33,6 +38,7 @@ public class ZipHelper {
     private static final String UN_ZIP_CMD = "unzip";
     private static final String RECURSIVE = "-r";
     private static final String ZIP_TYPE = ".zip";
+    private static final Integer BUFFER_SIZE = 2 * 1024;
 
     public static String unzip(String dirPath)throws Exception { //"D:\\tmp\\streamis\\20210922\\johnnwang\\ab_175950\\ab.zip"
         File file = new File(dirPath);
@@ -84,6 +90,95 @@ public class ZipHelper {
             IOUtils.closeQuietly(errorReader);
         }
         return longZipFilePath;
+    }
+
+    public static void packet(Path source, Path target) throws IOException {
+        if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)){
+            logger.info("Drop the duplicate file: {}" + target.toFile().getName());
+            Files.delete(target);
+        }
+        Files.createFile(target);
+        try(ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(target))) {
+            packet(source.toFile().getName(), source, zipOutputStream);
+        }
+        logger.info("Success to packet [{}] to [{}]", source.toFile().getName(), target.toFile().getName());
+    }
+    /**
+     * Un packet
+     * @param source source path
+     * @param target target path
+     * @throws IOException
+     */
+    public static void unPacket(Path source, Path target) throws IOException {
+        if (Files.isRegularFile(source, LinkOption.NOFOLLOW_LINKS)){
+            ZipFile zipFile = new ZipFile(source.toFile());
+            InputStream inputStream = Files.newInputStream(source);
+            try(ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
+                ZipEntry zipEntry = null;
+                while (null != (zipEntry = zipInputStream.getNextEntry())) {
+                    Path entryPath = target.resolve(zipEntry.getName());
+                    if (zipEntry.isDirectory()) {
+                        if (!Files.isDirectory(entryPath)) {
+                            Files.createDirectories(entryPath);
+                        }
+                    } else {
+                        try (InputStream entryStream = zipFile.getInputStream(zipEntry)) {
+                            try (OutputStream outputStream = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+                                byte[] buffer = new byte[BUFFER_SIZE];
+                                int pos = -1;
+                                while ((pos = entryStream.read(buffer)) != -1) {
+                                    outputStream.write(buffer, 0, pos);
+                                }
+                                outputStream.flush();
+                            }
+                        }
+                    }
+                }
+            }
+            logger.info("Success to un packet [{}] to [{}]", source.toFile().getName(), target.toFile().getName());
+        }
+    }
+
+    /**
+     * Packet path source
+     * @param name name
+     * @param source source path
+     * @param outputStream stream
+     * @throws IOException
+     */
+    private static void packet(String name, Path source, ZipOutputStream outputStream) throws IOException {
+        if (Files.isDirectory(source, LinkOption.NOFOLLOW_LINKS)){
+            name = name + IOUtils.DIR_SEPARATOR_UNIX;
+            // Accept empty directory
+            ZipEntry zipEntry = new ZipEntry(name);
+            outputStream.putNextEntry(zipEntry);
+            outputStream.closeEntry();
+            for(Path child : Files.list(source).collect(Collectors.toList())) {
+                packet(name + child.toFile().getName(), child, outputStream);
+            }
+        } else if (Files.isRegularFile(source, LinkOption.NOFOLLOW_LINKS)){
+            packet(name, Files.newInputStream(source), outputStream);
+        }
+    }
+
+    /**
+     * Packet input  stream
+     * @param name name
+     * @param inputStream input stream
+     * @param outputStream output stream
+     * @throws IOException
+     */
+    private static void packet(String name, InputStream inputStream, ZipOutputStream outputStream) throws IOException{
+        if (Objects.nonNull(inputStream)) {
+            ZipEntry zipEntry = new ZipEntry(name);
+            outputStream.putNextEntry(zipEntry);
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int pos = -1;
+            while ((pos = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, pos);
+            }
+            outputStream.closeEntry();
+        }
     }
 
     public static boolean isZip(String fileName){

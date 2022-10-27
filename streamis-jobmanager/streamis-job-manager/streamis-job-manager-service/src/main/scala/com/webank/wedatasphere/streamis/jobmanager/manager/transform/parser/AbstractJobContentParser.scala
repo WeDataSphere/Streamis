@@ -15,14 +15,16 @@
 
 package com.webank.wedatasphere.streamis.jobmanager.manager.transform.parser
 
+import com.webank.wedatasphere.streamis.jobmanager.manager.conf.JobConf
+
 import java.io.InputStream
 import java.util
-
 import org.apache.linkis.common.conf.Configuration
 import org.apache.linkis.common.utils.{JsonUtils, Logging}
 import com.webank.wedatasphere.streamis.jobmanager.manager.dao.StreamJobMapper
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.{StreamJob, StreamJobVersion, StreamisFile}
 import com.webank.wedatasphere.streamis.jobmanager.manager.exception.JobExecuteErrorException
+import com.webank.wedatasphere.streamis.jobmanager.manager.material.StreamFileContainer
 import com.webank.wedatasphere.streamis.jobmanager.manager.service.{BMLService, StreamiFileService}
 import com.webank.wedatasphere.streamis.jobmanager.manager.transform.JobContentParser
 import org.apache.commons.io.IOUtils
@@ -40,17 +42,40 @@ abstract class AbstractJobContentParser extends JobContentParser with Logging {
   @Autowired private var bmlService: BMLService = _
   @Autowired private var streamiFileService: StreamiFileService = _
 
+  /**
+   * Find file from container
+   * @param fileName file name
+   * @return
+   */
+  private def findFromFileContainer(fileName: String): StreamisFile = {
+    getStreamFileContainer match {
+      case container: StreamFileContainer =>
+        var baseName = fileName
+        var suffix: String = null
+        val splitIndex = fileName.lastIndexOf(".")
+        if (splitIndex > 0){
+          baseName = fileName.substring(0, splitIndex)
+          suffix = fileName.substring(splitIndex)
+        }
+        container.getStreamFile(baseName, null, suffix)
+      case _ => null
+    }
+  }
   private def findFromProject(projectName: String, fileName: String): StreamisFile = fileName match {
     case AbstractJobContentParser.PROJECT_FILE_REGEX(name, version) =>
-      val file = streamiFileService.getFile(projectName, name, version)
+      val file = Option(streamiFileService.getFile(projectName, name, version))
+        .getOrElse(findFromFileContainer(fileName))
       if(file == null)
         throw new JobExecuteErrorException(30500, s"Not exists file $fileName.")
       file
     case _ =>
       val files = streamiFileService.listFileVersions(projectName, fileName)
-      if(files == null || files.isEmpty)
-        throw new JobExecuteErrorException(30500, s"Not exists file $fileName.")
-      files.get(0)
+      if(files == null || files.isEmpty) {
+        Option(findFromFileContainer(fileName))match {
+          case Some(file) => file
+          case _ => throw new JobExecuteErrorException(30500, s"Not exists file $fileName.")
+        }
+      } else files.get(0)
   }
 
   private def findFromProject(projectName: String, fileNames: Array[String]): Array[StreamisFile] = {
@@ -104,6 +129,11 @@ abstract class AbstractJobContentParser extends JobContentParser with Logging {
 
   override def canParse(job: StreamJob, jobVersion: StreamJobVersion): Boolean = jobType == job.getJobType
 
+  /**
+   * Get the stream file container
+   * @return
+   */
+  def getStreamFileContainer: StreamFileContainer = null
 }
 object AbstractJobContentParser {
 
