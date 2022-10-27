@@ -30,7 +30,10 @@ public class StreamisJarTransformJobContent implements StreamisTransformJobConte
     private List<StreamisFile> dependencyJars;
     private List<String> hdfsJars;
     private List<StreamisFile> resources;
-
+    /**
+     * Conf file(maybe a package)
+     */
+    private StreamisFile configFile;
     public StreamisFile getMainClassJar() {
         return mainClassJar;
     }
@@ -77,5 +80,13 @@ public class StreamisJarTransformJobContent implements StreamisTransformJobConte
 
     public void setResources(List<StreamisFile> resources) {
         this.resources = resources;
+    }
+
+    public StreamisFile getConfigFile() {
+        return configFile;
+    }
+
+    public void setConfigFile(StreamisFile configFile) {
+        this.configFile = configFile;
     }
 }

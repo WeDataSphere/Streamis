@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component
   * Created by enjoyyin on 2021/9/23.
   */
 @Component
-class FlinkSQLJobContentParser extends AbstractJobContentParser {
+class FlinkSQLJobContentParser extends AbstractFlinkJobContentParser {
 
   override def parseTo(job: StreamJob, jobVersion: StreamJobVersion): StreamisTransformJobContent = {
     val jobContent = JsonUtils.jackson.readValue(jobVersion.getJobContent, classOf[util.Map[String, Object]])

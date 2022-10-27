@@ -247,6 +247,19 @@ CREATE TABLE `linkis_stream_project_privilege` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='项目权限表';
 
+DROP TABLE IF EXISTS `linkis_stream_job_container_files`;
+
+CREATE TABLE `linkis_stream_job_container_files` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `file_name` varchar(500) DEFAULT NULL,
+  `container_name` varchar(100) NOT NULL COMMENT 'The containe name'
+  `store_path` varchar(100) DEFAULT NULL COMMENT '如：{"resource":"22edar22", "version": "v0001"}',
+  `store_type` varchar(20) DEFAULT NULL COMMENT '存储类型，一般就是bml',
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(32) DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 ALTER TABLE `linkis_stream_project` ADD create_time datetime DEFAULT NULL;
 ALTER TABLE `linkis_stream_project` ADD last_update_by varchar(50) DEFAULT NULL;

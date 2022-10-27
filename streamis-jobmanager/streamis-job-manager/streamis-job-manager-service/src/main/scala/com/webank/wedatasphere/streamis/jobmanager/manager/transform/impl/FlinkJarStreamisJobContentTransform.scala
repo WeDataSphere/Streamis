@@ -27,7 +27,6 @@ import com.webank.wedatasphere.streamis.jobmanager.manager.utils.JobUtils
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 
 /**
   * Created by enjoyyin on 2021/9/23.
