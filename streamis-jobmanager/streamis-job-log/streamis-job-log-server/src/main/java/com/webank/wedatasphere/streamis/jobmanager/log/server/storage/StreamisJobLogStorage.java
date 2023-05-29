@@ -160,7 +160,8 @@ public class StreamisJobLogStorage implements JobLogStorage{
                                 LOG.info("Close the idle bucket: [ name: {}, last-write-time: {} ]",
                                         bucketName, dateFormat.format(bucketState.getBucketWriteTime()));
                                 closeBucket = true;
-                            } if (Objects.nonNull(bucketDriftPolicy) && bucketDriftPolicy.onPolicy(bucket, contexts)){
+                            }
+                            if (Objects.nonNull(bucketDriftPolicy) && bucketDriftPolicy.onPolicy(bucket, contexts)){
                                 LOG.info("Drift the bucket: [ name: {}, last-write-time: {} ]", bucketName,
                                         dateFormat.format(bucketState.getBucketWriteTime()));
                                 closeBucket = true;
