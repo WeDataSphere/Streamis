@@ -17,6 +17,7 @@ package com.webank.wedatasphere.streamis.jobmanager.restful.api;
 
 import com.webank.wedatasphere.streamis.jobmanager.exception.JobException;
 import com.webank.wedatasphere.streamis.jobmanager.exception.JobExceptionManager;
+import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.JobConf;
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.StreamJobVersion;
 import com.webank.wedatasphere.streamis.jobmanager.manager.project.service.ProjectPrivilegeService;
 import com.webank.wedatasphere.streamis.jobmanager.manager.service.BMLService;
@@ -69,6 +70,9 @@ public class UploadRestfulApi {
                               @RequestParam(name = "file") List<MultipartFile> files) throws IOException, JobException {
 
         String userName = ModuleUserUtils.getOperationUser(request, "upload job zip file");
+        if ((Boolean)JobConf.DISABLE_UPLOAD().getHotValue()) {
+            return Message.error("Job upload is disabled(任务导入功能已禁用)");
+        }
         if (files == null || files.size() <= 0) {
             throw JobExceptionManager.createException(30300, "uploaded files");
         }
