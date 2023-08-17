@@ -18,6 +18,7 @@ package com.webank.wedatasphere.streamis.projectmanager.restful.api;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.JobConf;
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.StreamisFile;
 import com.webank.wedatasphere.streamis.jobmanager.manager.exception.FileException;
 import com.webank.wedatasphere.streamis.jobmanager.manager.exception.FileExceptionManager;
@@ -68,6 +69,9 @@ public class ProjectManagerRestfulApi {
                            @RequestParam(name = "updateWhenExists", required = false) boolean updateWhenExists,
                            @RequestParam(name = "file") List<MultipartFile> files) throws UnsupportedEncodingException, FileException {
         String username = ModuleUserUtils.getOperationUser(req, "upload project files");
+        if ((Boolean) JobConf.DISABLE_UPLOAD().getHotValue()) {
+            return Message.error("Files upload is disabled(文件上传功能已禁用).");
+        }
         if (StringUtils.isBlank(version)) {
             return Message.error("version is null");
         }
