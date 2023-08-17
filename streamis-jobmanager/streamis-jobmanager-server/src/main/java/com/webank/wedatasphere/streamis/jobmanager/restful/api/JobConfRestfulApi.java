@@ -133,6 +133,9 @@ public class JobConfRestfulApi {
         Message result = Message.ok("success");
         try {
             String userName = ModuleUserUtils.getOperationUser(request, "save job config json");
+            if ((Boolean)JobConf.DISABLE_UPLOAD().getHotValue()) {
+                return Message.error("Config save operation is disabled(配置修改功能已禁用)");
+            }
             StreamJob streamJob = this.streamJobService.getJobById(jobId);
             // Accept the developer to modify
             if (!streamJobService.isCreator(jobId, userName) &&
@@ -177,6 +180,9 @@ public class JobConfRestfulApi {
         Message result = Message.ok("success");
         try {
             String userName = ModuleUserUtils.getOperationUser(req, "save config tree");
+            if ((Boolean)JobConf.DISABLE_UPLOAD().getHotValue()) {
+                return Message.error("Config add operation is disabled(配置增加功能已禁用)");
+            }
             JobConfValueSet fullTrees = DWSHttpClient.jacksonJson().readValue(json.get("fullTree").traverse(), JobConfValueSet.class);
             // Accept the developer to modify
             if (!streamJobService.isCreator(fullTrees.getJobId(), userName) &&
