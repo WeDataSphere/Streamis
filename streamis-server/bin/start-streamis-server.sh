@@ -16,7 +16,7 @@ if [[ -f "${STREAMIS_PID}" ]]; then
 fi
 
 export STREAMIS_LOG_PATH=$HOME/logs
-export STREAMIS_HEAP_SIZE="1G"
+export STREAMIS_HEAP_SIZE="2G"
 export STREAMIS_JAVA_OPTS="-Xms$STREAMIS_HEAP_SIZE -Xmx$STREAMIS_HEAP_SIZE -XX:+UseG1GC -XX:MaxPermSize=500m -Xloggc:$STREAMIS_LOG_DIR/streamis-gc.log -XX:+PrintGCDateStamps "
 
 nohup java $STREAMIS_JAVA_OPTS -cp $STREAMIS_CONF:$HOME/lib/* org.apache.linkis.DataWorkCloudApplication 2>&1 > $STREAMIS_LOG_PATH/streamis.out &
