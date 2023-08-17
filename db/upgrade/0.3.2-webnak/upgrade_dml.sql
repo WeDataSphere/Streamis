@@ -21,3 +21,6 @@ VALUES('43048', '缺少字段: %s', 'Object (\\S+) not found', 0);
 INSERT INTO linkis_ps_error_code
 (error_code, error_desc, error_regex, error_type)
 VALUES('43049', 'topic没有权限', 'Not authorized to access topics', 0);
+INSERT INTO linkis_ps_error_code
+(error_code, error_desc, error_regex, error_type)
+VALUES('43050', '请尝试同步一下物料', '应用不存在，请检查输入的appId', 0);
