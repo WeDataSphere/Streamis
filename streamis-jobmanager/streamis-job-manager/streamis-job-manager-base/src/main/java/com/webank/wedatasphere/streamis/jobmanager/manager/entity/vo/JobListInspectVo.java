@@ -16,6 +16,9 @@ public class JobListInspectVo implements JobInspectVo {
     }
 
     public List<YarnAppVo> getList() {
+        if (null == list) {
+            list = new ArrayList<>();
+        }
         return list;
     }
 
