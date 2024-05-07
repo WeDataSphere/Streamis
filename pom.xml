@@ -21,7 +21,7 @@
 
     <groupId>com.webank.wedatasphere.streamis</groupId>
     <artifactId>streamis</artifactId>
-    <version>0.3.8-wedatasphere-SNAPSHOT</version>
+    <version>${reversion}</version>
     <packaging>pom</packaging>
 
     <name>Streamis Project Parent POM</name>
@@ -45,6 +45,7 @@
     </modules>
 
     <properties>
+        <reversion>0.3.9-wedatasphere-SNAPSHOT</reversion>
         <linkis.version>1.1.18-wds</linkis.version>
         <junit.version>4.12</junit.version>
         <dss.version>1.1.0.18-SNAPSHOT</dss.version>
