@@ -40,20 +40,20 @@
 <!--        <dependency>-->
 <!--            <groupId>com.webank.wedatasphere.streamis</groupId>-->
 <!--            <artifactId>streamis-datasource-server</artifactId>-->
-<!--            <version>${streamis.version}</version>-->
+<!--            <version>${project.version}</version>-->
 <!--        </dependency>-->
 
 
 <!--        <dependency>-->
 <!--            <groupId>com.webank.wedatasphere.streamis</groupId>-->
 <!--            <artifactId>streamis-workflow-server</artifactId>-->
-<!--            <version>${streamis.version}</version>-->
+<!--            <version>${project.version}</version>-->
 <!--        </dependency>-->
 
         <dependency>
             <groupId>com.webank.wedatasphere.streamis</groupId>
             <artifactId>streamis-jobmanager-server</artifactId>
-            <version>${streamis.version}</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jackson-mapper-asl</artifactId>
@@ -73,14 +73,14 @@
         <dependency>
             <groupId>com.webank.wedatasphere.streamis</groupId>
             <artifactId>streamis-projectmanager-server</artifactId>
-            <version>${streamis.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>com.webank.wedatasphere.streamis</groupId>
             <artifactId>streamis-project-server</artifactId>
-            <version>${streamis.version}</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jackson-mapper-asl</artifactId>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>com.webank.wedatasphere.streamis</groupId>
             <artifactId>streamis-job-log-server</artifactId>
-            <version>${streamis.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
