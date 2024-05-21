@@ -45,7 +45,7 @@
     </modules>
 
     <properties>
-        <reversion>0.3.9-wedatasphere-SNAPSHOT</reversion>
+        <revision>0.3.9-wedatasphere-SNAPSHOT</revision>
         <linkis.version>1.3.0-wds</linkis.version>
         <junit.version>4.12</junit.version>
         <dss.version>1.1.0.18-SNAPSHOT</dss.version>
