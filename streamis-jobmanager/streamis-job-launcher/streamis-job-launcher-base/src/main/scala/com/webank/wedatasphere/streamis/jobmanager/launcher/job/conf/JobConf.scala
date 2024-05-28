@@ -128,6 +128,8 @@ object JobConf {
 
   val HIGHAVAILABLE_DEFAULT_POLICY: CommonVars[String] = CommonVars("wds.streamis.app.highavailable.default.policy", "single")
 
+  val HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD: CommonVars[Boolean] = CommonVars("wds.streamis.app.highavailable.enable.interface.upload", true)
+
   val JOB_SCHEMA_SINGLE: CommonVars[String] = CommonVars("wds.streamis.app.job.schema.single", "single")
 
   val JOB_SCHEMA_DOUBLE: CommonVars[String] = CommonVars("wds.streamis.app.job.schema.double", "double")
