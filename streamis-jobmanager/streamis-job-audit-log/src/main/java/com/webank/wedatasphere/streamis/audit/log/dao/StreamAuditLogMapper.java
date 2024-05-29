@@ -19,4 +19,8 @@ public interface StreamAuditLogMapper {
     void saveAuditLog(StreamAuditLog auditLog);
 
     String getProjectNameById(@Param("jobId")  Long jobId);
+
+    String getJobNameById(@Param("jobId")  Long jobId);
+
+    List<String> getBulkJobNameByIds(@Param("jobIds")  List<Long> jobIds);
 }
