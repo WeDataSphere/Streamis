@@ -465,7 +465,8 @@
       title="确认"
       @on-ok="confirmIgnoreHookModal"
     >
-      <Checkbox v-model="ignoreHookException">跳过Hook异常</Checkbox>
+      <Checkbox v-if="hasHook" v-model="ignoreHookException">跳过Hook异常</Checkbox>
+      <Checkbox v-if="showBatchStopSnapshotCheckBox" v-model="batchStopSnapshot">是否快照</Checkbox>
     </Modal>
   </div>
 </template>
@@ -746,6 +747,10 @@ export default {
       ignoreHookException: false,
       isBatchRestartHook: false,
       snapshot: false,
+
+      // 批量停止快照逻辑
+      batchStopSnapshot: false,
+      showBatchStopSnapshotCheckBox: false,
     }
   },
   async mounted() {
@@ -923,6 +928,7 @@ export default {
         this.batchRestart(this.snapshot)
       }else{
         this.stopDataShow = true
+        this.showBatchStopSnapshotCheckBox = false
       }
     },
     changeVisible(value) {
@@ -1068,12 +1074,9 @@ export default {
         this.$Message.error('存在非运行中的任务，请取消勾选此类任务再执行该操作!')
         return
       }
-      if (this.hasHook) {
-        this.ignoreHookModal = true
-        this.isBatchRestartHook = false
-      } else {
-        this.stopDataShow = true
-      }
+      this.ignoreHookModal = true
+      this.isBatchRestartHook = false
+      this.showBatchStopSnapshotCheckBox = true
     },
     async batchStop(){
       const bulk_sbj = this.selections.map(item => +item.id);
@@ -1081,12 +1084,19 @@ export default {
       this.modalTitle = this.$t('message.streamis.jobListTableColumns.stopTaskTitle');
       this.modalContent = this.$t('message.streamis.jobListTableColumns.stopTaskContent');
       try {
-        const pauseRes = await api.fetch('streamis/streamJobManager/job/bulk/pause', { bulk_sbj, snapshot: false, skipHookError: this.ignoreHookException });
+        const pauseRes = await api.fetch('streamis/streamJobManager/job/bulk/pause', { bulk_sbj, snapshot: this.batchStopSnapshot, skipHookError: this.ignoreHookException });
         console.log('pause pauseRes', pauseRes);
         if (!pauseRes.result || !pauseRes.result.Success || !pauseRes.result.Failed) {
           this.isFinish = true;
           this.modalContent = "停止接口后台返回异常"
           return
+        }
+        if (this.batchStopSnapshot) {
+          this.snapPaths = pauseRes.result.Success.data.map(item => ({
+            taskId: item.jobId,
+            taskName: item.scheduleId,
+            info: item.snapshotPath,
+          }));
         }
         this.failTasks = pauseRes.result.Failed.data.map(item => ({
           taskId: item.jobId,
