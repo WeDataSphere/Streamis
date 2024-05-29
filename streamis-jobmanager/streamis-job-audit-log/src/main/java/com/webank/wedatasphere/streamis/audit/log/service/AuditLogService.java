@@ -14,4 +14,8 @@ public interface AuditLogService {
     void  saveAuditLog(StreamAuditLog auditLog);
 
     String getProjectNameById(Long jobId);
+
+    String getJobNameById(Long jobId);
+
+    List<String> getBulkJobNameByIds(List<Long> jobIds);
 }

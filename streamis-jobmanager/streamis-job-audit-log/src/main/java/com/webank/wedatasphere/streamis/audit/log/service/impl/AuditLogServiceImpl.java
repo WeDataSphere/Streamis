@@ -30,4 +30,13 @@ public class AuditLogServiceImpl implements AuditLogService {
         return auditLogMapper.getProjectNameById(jobId);
     }
 
+    @Override
+    public String getJobNameById(Long jobId){
+        return auditLogMapper.getJobNameById(jobId);
+    }
+
+    public List<String> getBulkJobNameByIds(List<Long> jobIds){
+        return auditLogMapper.getBulkJobNameByIds(jobIds);
+    }
+
 }
