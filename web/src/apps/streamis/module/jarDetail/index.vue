@@ -341,8 +341,9 @@ export default {
       this.meta = this.formatJSON(this.jarData.jobTemplate ? this.jarData.jobTemplate.metaJson : '')
     },
     downloadMetaJson() {
+      this.meta = this.formatJSON(this.jarData.jobTemplate ? this.jarData.jobTemplate.metaJson : '')
       if (!this.meta) {
-        this.$Message.error({ content: '模版为空' })
+        this.$Message.error({ content: '模板为空' })
         return
       }
       const blob = new Blob([this.meta], { type: 'application/json' })
