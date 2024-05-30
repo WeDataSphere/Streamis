@@ -38,13 +38,11 @@
         <if test="endDate != null">
             AND operate_time &lt;= #{endDate}
         </if>
-        <if test="jobName != null and jobName !=''">
-            <if test="jobName == '*'">
-                AND jobName IS NULL
-            </if>
-            <if test="jobName != '*'">
-                AND jobName LIKE CONCAT('%', #{jobName}, '%')
-            </if>
+        <if test="jobName != null and jobName !='' and jobName == '*'">
+            AND job_name IS NULL
+        </if>
+        <if test="jobName != null and jobName !='' and jobName != '*'">
+            AND job_name LIKE CONCAT('%', #{jobName}, '%')
         </if>
         order by operate_time desc
     </select>
