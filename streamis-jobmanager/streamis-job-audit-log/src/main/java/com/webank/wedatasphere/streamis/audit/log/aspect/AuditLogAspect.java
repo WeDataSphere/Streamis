@@ -120,6 +120,9 @@ public class AuditLogAspect {
 
 
     private void logAuditInformation(String requestURI, String requestParams, String result, String proxyUser, String userName, String method, String projectName, long costTimeMills,String jobName) {
+        if ("GET".equalsIgnoreCase(method) && !requestURI.equals(InterfaceDescriptionEnum.JOB_STOP.getUrl())){
+            return;
+        }
         String apiDesc = InterfaceDescriptionEnum.getDescriptionByUrl(requestURI);
         String clientIp = getClientIp();
         StreamAuditLog auditLog = new StreamAuditLog();
@@ -352,8 +355,14 @@ public class AuditLogAspect {
                     .map(Long::valueOf)
                     .collect(Collectors.toList());
             List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
-            return jobNames.toString();
-        } else {
+            return String.join(",", jobNames);
+        }  else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_STATUS.getUrl())) {
+            Map map = BDPJettyServerHelper.gson().fromJson(requestParams.get("requestMap").toString(), Map.class);
+            List<Double> jobIdDouble = (List<Double>) map.get("id_list");
+            List<Long> jobIds = jobIdDouble.stream().map(Math::round).collect(Collectors.toList());
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            return String.join(",", jobNames);
+        }else {
             String jobId = req.getParameter("jobId");
             return auditLogService.getJobNameById(Long.valueOf(jobId));
         }
@@ -380,16 +389,19 @@ public class AuditLogAspect {
             Map bulkRequest = gson.fromJson(gson.toJson(requestParams.get("execBulkRequest")), Map.class);
             List<Double> bulkSbjList = (List<Double>) bulkRequest.get("bulkSubject");
             List<Long> jobIds = bulkSbjList.stream().map(Math::round).collect(Collectors.toList());
-            jobName = auditLogService.getBulkJobNameByIds(jobIds).toString();
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            jobName = String.join(",", jobNames);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_BULK_PAUSE.getUrl())) {
             Map bulkRequest = gson.fromJson(gson.toJson(requestParams.get("pauseRequest")), Map.class);
             List<Double> bulkSbjList = (List<Double>) bulkRequest.get("bulkSubject");
             List<Long> jobIds = bulkSbjList.stream().map(Math::round).collect(Collectors.toList());
-            jobName = auditLogService.getBulkJobNameByIds(jobIds).toString();
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            jobName = String.join(",", jobNames);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_ENABLE.getUrl())
                 || req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_BAN.getUrl())) {
             List<Long> jobIds = (List<Long>) requestParams.get("jobIdList");
-            jobName = auditLogService.getBulkJobNameByIds(jobIds).toString();
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            jobName = String.join(",", jobNames);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_CREATE_OR_UPDATE.getUrl())) {
             Map metaJsonInfo = gson.fromJson(gson.toJson(requestParams.get("metaJsonInfo")), Map.class);
             jobName = metaJsonInfo.get("jobName").toString();
