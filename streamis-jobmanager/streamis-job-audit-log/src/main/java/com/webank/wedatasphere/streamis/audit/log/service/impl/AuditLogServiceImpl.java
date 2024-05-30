@@ -15,8 +15,8 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Autowired
     private StreamAuditLogMapper auditLogMapper;
 
-    public PageInfo<StreamAuditLog> searchAuditLogs(String apiName, String user, String proxyUser, Date startDate, Date endDate,String projectName) {
-        List<StreamAuditLog> streamAuditLogs = auditLogMapper.searchAuditLogs(apiName, user, proxyUser, startDate, endDate,projectName);
+    public PageInfo<StreamAuditLog> searchAuditLogs(String apiName, String user, String proxyUser, Date startDate, Date endDate,String projectName,String jobName) {
+        List<StreamAuditLog> streamAuditLogs = auditLogMapper.searchAuditLogs(apiName, user, proxyUser, startDate, endDate,projectName,jobName);
         return new PageInfo<>(streamAuditLogs);
     }
 
