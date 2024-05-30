@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AuditLogService {
 
-    PageInfo<StreamAuditLog> searchAuditLogs(String apiName, String user, String proxyUser, Date startDate, Date endDate,String projectName);
+    PageInfo<StreamAuditLog> searchAuditLogs(String apiName, String user, String proxyUser, Date startDate, Date endDate,String projectName,String jobName);
 
     void  saveAuditLog(StreamAuditLog auditLog);
 

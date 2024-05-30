@@ -336,8 +336,13 @@ public class AuditLogAspect {
     }
 
     private String getJobNameFromGetRequest(HttpServletRequest req) {
-        Long jobId = Long.valueOf(req.getParameter("jobId"));
-        return auditLogService.getJobNameById(jobId);
+        String jobIdStr = req.getParameter("jobId");
+        if (StringUtils.isNotBlank(jobIdStr)) {
+            Long jobId = Long.valueOf(jobIdStr);
+            return auditLogService.getJobNameById(jobId);
+        } else {
+            return null;
+        }
     }
 
     private String getJobNameFromPutRequest(HttpServletRequest req, Map<String, Object> requestParams) {
