@@ -16,7 +16,14 @@ public class AuditLogServiceImpl implements AuditLogService {
     private StreamAuditLogMapper auditLogMapper;
 
     public PageInfo<StreamAuditLog> searchAuditLogs(String apiName, String user, String proxyUser, Date startDate, Date endDate,String projectName,String jobName) {
-        List<StreamAuditLog> streamAuditLogs = auditLogMapper.searchAuditLogs(apiName, user, proxyUser, startDate, endDate,projectName,jobName);
+        Boolean jobNameIsNull = false;
+        String jobNameLike = null;
+        if ("*".equals(jobName)) {
+            jobNameIsNull = true;
+        } else if (jobName != null && !jobName.isEmpty()) {
+            jobNameLike = "%" + jobName + "%";
+        }
+        List<StreamAuditLog> streamAuditLogs = auditLogMapper.searchAuditLogs(apiName, user, proxyUser, startDate, endDate,projectName,jobName,jobNameIsNull,jobNameLike);
         return new PageInfo<>(streamAuditLogs);
     }
 
