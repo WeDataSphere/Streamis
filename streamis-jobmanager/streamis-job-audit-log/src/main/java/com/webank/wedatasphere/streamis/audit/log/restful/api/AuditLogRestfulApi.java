@@ -45,7 +45,8 @@ public class AuditLogRestfulApi {
                                    @RequestParam(value = "proxyUser", required = false) String proxyUser,
                                    @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDate,
                                    @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDate,
-                                   @RequestParam(value = "projectName",required = false) String projectName
+                                   @RequestParam(value = "projectName",required = false) String projectName,
+                                   @RequestParam(value = "jobName",required = false) String jobName
                                    ) {
         String userName = ModuleUserUtils.getOperationUser(req, "Query job audit log");
         if(StringUtils.isBlank(projectName)){
@@ -63,7 +64,7 @@ public class AuditLogRestfulApi {
         PageInfo<StreamAuditLog> pageInfo;
         PageHelper.startPage(pageNow, pageSize);
         try {
-            pageInfo = auditLogService.searchAuditLogs(apiName, user, proxyUser, startDate, endDate,projectName);
+            pageInfo = auditLogService.searchAuditLogs(apiName, user, proxyUser, startDate, endDate,projectName,jobName);
         } finally {
             PageHelper.clearPage();
         }

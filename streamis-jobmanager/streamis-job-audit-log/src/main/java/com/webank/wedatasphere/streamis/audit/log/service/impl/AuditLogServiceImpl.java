@@ -15,8 +15,15 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Autowired
     private StreamAuditLogMapper auditLogMapper;
 
-    public PageInfo<StreamAuditLog> searchAuditLogs(String apiName, String user, String proxyUser, Date startDate, Date endDate,String projectName) {
-        List<StreamAuditLog> streamAuditLogs = auditLogMapper.searchAuditLogs(apiName, user, proxyUser, startDate, endDate,projectName);
+    public PageInfo<StreamAuditLog> searchAuditLogs(String apiName, String user, String proxyUser, Date startDate, Date endDate,String projectName,String jobName) {
+        Boolean jobNameIsNull = false;
+        String jobNameLike = null;
+        if ("*".equals(jobName)) {
+            jobNameIsNull = true;
+        } else if (jobName != null && !jobName.isEmpty()) {
+            jobNameLike = "%" + jobName + "%";
+        }
+        List<StreamAuditLog> streamAuditLogs = auditLogMapper.searchAuditLogs(apiName, user, proxyUser, startDate, endDate,projectName,jobName,jobNameIsNull,jobNameLike);
         return new PageInfo<>(streamAuditLogs);
     }
 
@@ -28,6 +35,15 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Override
     public String getProjectNameById(Long jobId) {
         return auditLogMapper.getProjectNameById(jobId);
+    }
+
+    @Override
+    public String getJobNameById(Long jobId){
+        return auditLogMapper.getJobNameById(jobId);
+    }
+
+    public List<String> getBulkJobNameByIds(List<Long> jobIds){
+        return auditLogMapper.getBulkJobNameByIds(jobIds);
     }
 
 }

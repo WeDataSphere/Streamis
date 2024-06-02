@@ -74,14 +74,15 @@ public class AuditLogAspect {
             throw e;
         }
         long costTime = System.currentTimeMillis() - startTime;
+        String jobName = getJobNameFromRequest(req, requestParams, method);
         result = Optional.ofNullable(result).orElse("--");
-        logAuditInformationAsync(req, requestURI, requestParams, parseObjectToString(result), proxyUser, userName, method, costTime);
+        logAuditInformationAsync(req, requestURI, requestParams, parseObjectToString(result), proxyUser, userName, method, costTime, jobName);
         return result;
     }
 
     @Async
     public void logAuditInformationAsync(HttpServletRequest req, String requestURI, Map<String, Object> requestParams,
-                                         String result, String proxyUser, String userName, String method, long costTimeMills) {
+                                         String result, String proxyUser, String userName, String method, long costTimeMills,String jobName) {
         if (!JobAuditConf.AUDIT_LOG_ENABLE.getValue()) {
             return;
         }
@@ -111,14 +112,17 @@ public class AuditLogAspect {
             projectName = getProjectNameFromReferer(req.getHeader("Referer"));
         }
         try {
-            logAuditInformation(requestURI, parseObjectToString(requestParams), result, proxyUser, userName, method, projectName, costTimeMills);
+            logAuditInformation(requestURI, parseObjectToString(requestParams), result, proxyUser, userName, method, projectName, costTimeMills,jobName);
         } catch (Exception e) {
             LOG.error("审计日志记录保存失败");
         }
     }
 
 
-    private void logAuditInformation(String requestURI, String requestParams, String result, String proxyUser, String userName, String method, String projectName, long costTimeMills) {
+    private void logAuditInformation(String requestURI, String requestParams, String result, String proxyUser, String userName, String method, String projectName, long costTimeMills,String jobName) {
+        if ("GET".equalsIgnoreCase(method) && !requestURI.equals(InterfaceDescriptionEnum.JOB_STOP.getUrl())){
+            return;
+        }
         String apiDesc = InterfaceDescriptionEnum.getDescriptionByUrl(requestURI);
         String clientIp = getClientIp();
         StreamAuditLog auditLog = new StreamAuditLog();
@@ -133,6 +137,7 @@ public class AuditLogAspect {
         auditLog.setProjectName(projectName);
         auditLog.setClientIp(clientIp);
         auditLog.setCostTimeMills(costTimeMills);
+        auditLog.setJobName(jobName);
         auditLogService.saveAuditLog(auditLog);
     }
 
@@ -322,6 +327,92 @@ public class AuditLogAspect {
         return projectName;
     }
 
+    private String getJobNameFromRequest(HttpServletRequest req, Map<String, Object> requestParams, String method) {
+        if ("GET".equalsIgnoreCase(method)) {
+            return getJobNameFromGetRequest(req);
+        } else if ("PUT".equalsIgnoreCase(method)) {
+            return getJobNameFromPutRequest(req, requestParams);
+        } else if ("POST".equalsIgnoreCase(method)) {
+            return getJobNameFromPostRequest(req, requestParams);
+        }
+        return "--";
+    }
+
+    private String getJobNameFromGetRequest(HttpServletRequest req) {
+        String jobIdStr = req.getParameter("jobId");
+        if (StringUtils.isNotBlank(jobIdStr)) {
+            Long jobId = Long.valueOf(jobIdStr);
+            return auditLogService.getJobNameById(jobId);
+        } else {
+            return null;
+        }
+    }
+
+    private String getJobNameFromPutRequest(HttpServletRequest req, Map<String, Object> requestParams) {
+        if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_EXECUTE_INSPECT.getUrl())) {
+            String[] jobIdArray = req.getParameterValues("jobId");
+            List<Long> jobIds = Arrays.stream(jobIdArray)
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            return String.join(",", jobNames);
+        }  else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_STATUS.getUrl())) {
+            Map map = BDPJettyServerHelper.gson().fromJson(requestParams.get("requestMap").toString(), Map.class);
+            List<Double> jobIdDouble = (List<Double>) map.get("id_list");
+            List<Long> jobIds = jobIdDouble.stream().map(Math::round).collect(Collectors.toList());
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            return String.join(",", jobNames);
+        }else {
+            String jobId = req.getParameter("jobId");
+            return auditLogService.getJobNameById(Long.valueOf(jobId));
+        }
+    }
+
+    private String getJobNameFromPostRequest(HttpServletRequest req, Map<String, Object> requestParams) {
+        String jobName;
+        Gson gson = BDPJettyServerHelper.gson();
+        if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_LABEL.getUrl())) {
+            Map tasks = gson.fromJson(gson.toJson(requestParams.get("bulkUpdateLabelRequest")), Map.class);
+            List<Map<String, Object>> list = gson.fromJson(tasks.get("tasks").toString(), new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+            String jobId = list.get(0).get("id").toString();
+            jobName = auditLogService.getJobNameById((long) Double.parseDouble(jobId));
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_EXECUTE.getUrl())) {
+            Map map = gson.fromJson(requestParams.get("json").toString(), Map.class);
+            Long jobId = (long) Double.parseDouble(map.get("jobId").toString());
+            jobName = auditLogService.getJobNameById(jobId);
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_CONTENT.getUrl())) {
+            Map contentRequest = gson.fromJson(gson.toJson(requestParams.get("contentRequest")), Map.class);
+            Long jobId = (long) Double.parseDouble(contentRequest.get("jobId").toString());
+            jobName = auditLogService.getJobNameById(jobId);
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_BULK_EXECUTION.getUrl())) {
+            Map bulkRequest = gson.fromJson(gson.toJson(requestParams.get("execBulkRequest")), Map.class);
+            List<Double> bulkSbjList = (List<Double>) bulkRequest.get("bulkSubject");
+            List<Long> jobIds = bulkSbjList.stream().map(Math::round).collect(Collectors.toList());
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            jobName = String.join(",", jobNames);
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_BULK_PAUSE.getUrl())) {
+            Map bulkRequest = gson.fromJson(gson.toJson(requestParams.get("pauseRequest")), Map.class);
+            List<Double> bulkSbjList = (List<Double>) bulkRequest.get("bulkSubject");
+            List<Long> jobIds = bulkSbjList.stream().map(Math::round).collect(Collectors.toList());
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            jobName = String.join(",", jobNames);
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_ENABLE.getUrl())
+                || req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_BAN.getUrl())) {
+            List<Long> jobIds = (List<Long>) requestParams.get("jobIdList");
+            List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
+            jobName = String.join(",", jobNames);
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_CREATE_OR_UPDATE.getUrl())) {
+            Map metaJsonInfo = gson.fromJson(gson.toJson(requestParams.get("metaJsonInfo")), Map.class);
+            jobName = metaJsonInfo.get("jobName").toString();
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_TASK.getUrl())) {
+            Map json = gson.fromJson(gson.toJson(requestParams.get("json")), Map.class);
+            jobName = json.get("jobName").toString();
+        } else {
+            jobName = requestParams.get("jobName").toString();
+        }
+        return jobName;
+    }
 
     private Map<String, Object> parseJsonToMap(String json) {
         try {
