@@ -42,15 +42,27 @@ public class SourceUtils {
                             }
                             highAvailableVo.setMsg(map.getOrDefault("highAvailableMessage","高可用信息为空，请联系管理员").toString());
                             return highAvailableVo;
-                        }  else {
+                        } else {
+                            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getValue().toString())){
+                                highAvailableVo.setHighAvailable(true);
+                                highAvailableVo.setMsg("非标准来源,不检测高可用");
+                                return highAvailableVo;
+                            } else {
+                                highAvailableVo.setHighAvailable(false);
+                                highAvailableVo.setMsg(map.getOrDefault("highAvailableMessage","高可用信息为空，请联系管理员").toString());
+                                return highAvailableVo;
+                            }
+                        }
+                    } else {
+                        if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getValue().toString())){
                             highAvailableVo.setHighAvailable(true);
                             highAvailableVo.setMsg("非标准来源,不检测高可用");
                             return highAvailableVo;
+                        } else {
+                            highAvailableVo.setHighAvailable(false);
+                            highAvailableVo.setMsg(map.getOrDefault("highAvailableMessage","高可用信息为空，请联系管理员").toString());
+                            return highAvailableVo;
                         }
-                    }   else {
-                        highAvailableVo.setHighAvailable(true);
-                        highAvailableVo.setMsg("非标准来源,不检测高可用");
-                        return highAvailableVo;
                     }
                 } else {
                     highAvailableVo.setHighAvailable(true);
