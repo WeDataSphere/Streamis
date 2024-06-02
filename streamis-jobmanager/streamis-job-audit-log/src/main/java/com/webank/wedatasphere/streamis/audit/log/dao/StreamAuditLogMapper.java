@@ -15,7 +15,9 @@ public interface StreamAuditLogMapper {
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("projectName") String projectName,
-            @Param("jobName") String jobName);
+            @Param("jobName") String jobName,
+            @Param("jobNameIsNull") Boolean jobNameIsNull,
+            @Param("jobNameLike") String jobNameLike);
 
     void saveAuditLog(StreamAuditLog auditLog);
 
