@@ -363,8 +363,13 @@ public class AuditLogAspect {
             List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
             return String.join(",", jobNames);
         }else {
-            String jobId = req.getParameter("jobId");
-            return auditLogService.getJobNameById(Long.valueOf(jobId));
+            String jobIdStr = req.getParameter("jobId");
+            if (StringUtils.isNotBlank(jobIdStr)) {
+                Long jobId = Long.valueOf(jobIdStr);
+                return auditLogService.getJobNameById(jobId);
+            }else{
+                return null;
+            }
         }
     }
 
