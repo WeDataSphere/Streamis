@@ -183,8 +183,13 @@ class DefaultStreamJobInspectService extends StreamJobInspectService with Loggin
           inspectVo = SourceUtils.manageJobProjectFile(highAvailablePolicy, source)
         case None =>
           logger.warn("this job source is null")
-          inspectVo.setHighAvailable(true)
-          inspectVo.setMsg("用户直接从页面上传，job的source为空，跳过高可用检查")
+          if (JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD.getValue){
+            inspectVo.setHighAvailable(true)
+            inspectVo.setMsg("用户直接从页面上传，job的source为空，跳过高可用检查")
+          }else{
+            inspectVo.setHighAvailable(false)
+            inspectVo.setMsg("用户直接从页面上传，高可用检查不通过")
+          }
       }
       inspectVo
     }
