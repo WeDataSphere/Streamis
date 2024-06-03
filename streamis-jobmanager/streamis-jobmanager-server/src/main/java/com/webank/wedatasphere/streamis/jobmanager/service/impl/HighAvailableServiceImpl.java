@@ -44,8 +44,13 @@ public class HighAvailableServiceImpl implements HighAvailableService {
             inspectVo = SourceUtils.manageJobProjectFile(highAvailablePolicy, source);
         } else {
             LOG.warn("this job source is null");
-            inspectVo.setHighAvailable(true);
-            inspectVo.setMsg("User changed params of job not by deploy, will skip to check its highavailable(用户未走发布单独修改了job信息，跳过高可用检查)");
+            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getValue().toString())){
+                inspectVo.setHighAvailable(true);
+                inspectVo.setMsg("job的source为空，跳过高可用检查");
+            }else{
+                inspectVo.setHighAvailable(false);
+                inspectVo.setMsg("job的source为空，高可用检查不通过");
+            }
         }
         return inspectVo;
     }
