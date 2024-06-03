@@ -10,6 +10,7 @@ import com.webank.wedatasphere.streamis.jobmanager.manager.service.StreamJobServ
 import com.webank.wedatasphere.streamis.jobmanager.service.HighAvailableService;
 import com.webank.wedatasphere.streamis.jobmanager.vo.HighAvailableMsg;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.proxy.ProxyUserEntity;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.utils.ModuleUserUtils;
 import org.slf4j.Logger;
@@ -53,9 +54,12 @@ public class HighAvailableRestfulApi {
     @RequestMapping(path = "/username", method = RequestMethod.GET)
     public Message getUserName(HttpServletRequest request){
         Message result = Message.ok("success");
-        String userName = ModuleUserUtils.getOperationUser(request, "get user name");
+        ProxyUserEntity proxyUserEntity = ModuleUserUtils.getProxyUserEntity(request, "record audit log");
+        String proxyUser = proxyUserEntity.getProxyUser();
+        String userName = proxyUserEntity.getUsername();
         if (StringUtils.isBlank(userName)) return Message.error("current user has no permission");
         result.data("userName",userName);
+        result.data("proxyUser",proxyUser);
         return result;
     }
 }
