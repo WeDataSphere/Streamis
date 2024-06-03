@@ -337,6 +337,9 @@ public class ReaderUtils {
             if (jobConfig != null && jobConfig.containsKey(PRODUCE_PARAM)) {
                 return false;
             }
+            if(metaJsonInfo.getProjectName() == null && metaJsonInfo.getProjectName().isEmpty()) {
+                return false;
+            }
             if ((metaJsonInfo.getJobName() == null || metaJsonInfo.getJobName().isEmpty()) &&
                     (metaJsonInfo.getJobType() == null || metaJsonInfo.getJobType().isEmpty()) &&
                     (metaJsonInfo.getTags() == null || metaJsonInfo.getTags().isEmpty()) &&

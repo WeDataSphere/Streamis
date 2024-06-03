@@ -369,7 +369,7 @@ public class AuditLogAspect {
     }
 
     private String getJobNameFromPostRequest(HttpServletRequest req, Map<String, Object> requestParams) {
-        String jobName;
+        String jobName = null;
         Gson gson = BDPJettyServerHelper.gson();
         if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_LABEL.getUrl())) {
             Map tasks = gson.fromJson(gson.toJson(requestParams.get("bulkUpdateLabelRequest")), Map.class);
@@ -409,8 +409,11 @@ public class AuditLogAspect {
             Map json = gson.fromJson(gson.toJson(requestParams.get("json")), Map.class);
             jobName = json.get("jobName").toString();
         } else {
-            String jobId = requestParams.get("jobId").toString();
-            jobName = auditLogService.getJobNameById(Long.valueOf(jobId));
+            if (requestParams.get("jobId") != null){
+                String jobIdStr = requestParams.get("jobId").toString();
+                Long jobId = Long.valueOf(jobIdStr);
+                jobName = auditLogService.getJobNameById(jobId);
+            }
         }
         return jobName;
     }
