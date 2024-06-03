@@ -44,7 +44,7 @@ public class HighAvailableServiceImpl implements HighAvailableService {
             inspectVo = SourceUtils.manageJobProjectFile(highAvailablePolicy, source);
         } else {
             LOG.warn("this job source is null");
-            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getValue().toString())){
+            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getHotValue().toString())){
                 inspectVo.setHighAvailable(true);
                 inspectVo.setMsg("job的source为空，跳过高可用检查");
             }else{
