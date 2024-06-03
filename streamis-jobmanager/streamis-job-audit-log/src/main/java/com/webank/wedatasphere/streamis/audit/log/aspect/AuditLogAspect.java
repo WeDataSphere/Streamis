@@ -409,7 +409,8 @@ public class AuditLogAspect {
             Map json = gson.fromJson(gson.toJson(requestParams.get("json")), Map.class);
             jobName = json.get("jobName").toString();
         } else {
-            jobName = requestParams.get("jobName").toString();
+            String jobId = requestParams.get("jobId").toString();
+            jobName = auditLogService.getJobNameById(Long.valueOf(jobId));
         }
         return jobName;
     }
