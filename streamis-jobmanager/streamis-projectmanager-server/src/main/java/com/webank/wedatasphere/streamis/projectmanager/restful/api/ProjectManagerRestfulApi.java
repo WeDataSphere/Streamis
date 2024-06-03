@@ -128,7 +128,7 @@ public class ProjectManagerRestfulApi {
             os = IoUtils.generateExportOutputStream(inputPath);
             IOUtils.copy(is, os);
             if (!p.isEmpty() && p.getOriginalFilename().endsWith(templateName)) {
-                if(!readerUtils.checkMetaTemplate(fileName,inputPath,projectName)) return Message.error("meta template is not correct,eg:testProject(项目名)-meta.json");
+                if(!readerUtils.checkMetaTemplate(fileName,inputPath,projectName)) return Message.error("meta template is not correct,please check");
                 projectManagerService.upload(username, fileName, version, projectName, inputPath, comment, source);
                 StreamisFile file = projectManagerService.selectFile(fileName,version,projectName);
                 projectManagerService.uploadJobTemplate(username,fileName,inputPath,projectName,version,file.getStorePath());
