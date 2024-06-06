@@ -39,7 +39,7 @@ public class HighAvailableServiceImpl implements HighAvailableService {
         String highAvailablePolicy = this.streamJobConfService.getJobConfValue(jobId, JobConf.HIGHAVAILABLE_POLICY_KEY().getValue());
         JobHighAvailableVo inspectVo = new JobHighAvailableVo();
         Optional<String> sourceOption = Optional.ofNullable(jobVersion.getSource());
-        if(sourceOption.isPresent() && JsonUtil.isJson(sourceOption.get())) {
+        if(sourceOption.isPresent()) {
             String source = sourceOption.get();
             inspectVo = SourceUtils.manageJobProjectFile(highAvailablePolicy, source);
         } else {
