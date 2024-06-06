@@ -120,7 +120,7 @@ public class AuditLogAspect {
 
 
     private void logAuditInformation(String requestURI, String requestParams, String result, String proxyUser, String userName, String method, String projectName, long costTimeMills,String jobName) {
-        if ("GET".equalsIgnoreCase(method) && !requestURI.equals(InterfaceDescriptionEnum.JOB_STOP.getUrl())){
+        if ("GET".equalsIgnoreCase(method) && !InterfaceDescriptionEnum.getAllowedUriSet().contains(requestURI)){
             return;
         }
         String apiDesc = InterfaceDescriptionEnum.getDescriptionByUrl(requestURI);

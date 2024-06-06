@@ -20,9 +20,16 @@ public class SourceUtils {
         highAvailablePolicy = Optional.ofNullable(highAvailablePolicy).orElse(JobConf.HIGHAVAILABLE_DEFAULT_POLICY().getHotValue());
         JobHighAvailableVo highAvailableVo = new JobHighAvailableVo();
         if (source.equalsIgnoreCase("update args")) {
-            highAvailableVo.setHighAvailable(true);
-            highAvailableVo.setMsg("用户在页面手动修改args,任务不再支持高可用");
-            return highAvailableVo;
+            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getValue().toString())){
+                highAvailableVo.setHighAvailable(true);
+                highAvailableVo.setMsg("用户在页面手动修改args,跳过一致性检查");
+                return highAvailableVo;
+            } else {
+                highAvailableVo.setHighAvailable(false);
+                highAvailableVo.setMsg("用户在页面手动修改args,任务不再支持高可用");
+                return highAvailableVo;
+            }
+
         }
         try {
             if (!Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE().getValue().toString())) {
