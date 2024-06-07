@@ -227,31 +227,39 @@ public class ProjectManagerRestfulApi {
     }
 
     @RequestMapping(path = "/files/download", method = RequestMethod.GET)
-    public Message download( HttpServletRequest req, HttpServletResponse response,
+    public void download( HttpServletRequest req, HttpServletResponse response,
                              @RequestParam(value = "id",required = false) Long id,
                              @RequestParam(value = "materialType",required = false) String materialType,
                              @RequestParam(value = "projectName",required = false)String projectName) {
         StreamisFile file = null;
         String userName = ModuleUserUtils.getOperationUser(req, "download job");
-        if (org.apache.commons.lang.StringUtils.isBlank(userName)) return Message.error("current user has no permission");
+        if (org.apache.commons.lang.StringUtils.isBlank(userName)) {
+            LOG.error("current user has no permission");
+            return;
+        }
         if (StringUtils.isBlank(projectName)) {
             if (StringUtils.isBlank(materialType)) {
-                return Message.error("projectName and materialType is null");
+                LOG.error("projectName and materialType is null");
+                return;
             } else if (materialType.equals(TYPE_JOB)) {
                 file = streamJobService.getJobFileById(id);
             } else if (materialType.equals(TYPE_PROJECT)){
                 file = projectManagerService.getFile(id, projectName);
             }
         } else {
-            if (!projectPrivilegeService.hasEditPrivilege(req, projectName))
-                return Message.error(NO_OPERATION_PERMISSION_MESSAGE);
+            if (!projectPrivilegeService.hasEditPrivilege(req, projectName)) {
+                LOG.error(NO_OPERATION_PERMISSION_MESSAGE);
+                return;
+            }
             file = projectManagerService.getFile(id, projectName);
         }
         if (file == null) {
-            return Message.error("no such file in this project");
+            LOG.error("no such file in this project");
+            return;
         }
         if (StringUtils.isBlank(file.getStorePath())) {
-            return Message.error("storePath is null");
+            LOG.error("storePath is null");
+            return;
         }
         response.setContentType("application/x-download");
         response.setHeader("content-Disposition", "attachment;filename=" + file.getFileName());
@@ -267,8 +275,6 @@ public class ProjectManagerRestfulApi {
             os.flush();
         } catch (Exception e) {
             LOG.error("download file: {} failed , message is : {}", file.getFileName(), e);
-            return Message.error(e.getMessage());
         }
-        return Message.ok();
     }
 }
