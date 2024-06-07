@@ -26,11 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,6 +61,9 @@ public class AuditLogAspect {
         String userName = proxyUserEntity.getUsername();
 
         Map<String, Object> requestParams = getRequestParamsByProceedingJoinPoint(joinPoint);
+        if (requestParams.containsKey("response")) {
+            requestParams.remove("response");
+        }
         Object result = null;
         long startTime = System.currentTimeMillis();
         try {
@@ -432,15 +431,15 @@ public class AuditLogAspect {
         }
     }
 
-    private String parseObjectToString(Object json) {
+    private String parseObjectToString(Object obj) {
         try {
-            if (ObjectUtils.isEmpty(json)) {
+            if (ObjectUtils.isEmpty(obj)) {
                 return "--";
             } else {
-                return BDPJettyServerHelper.gson().toJson(json);
+                return BDPJettyServerHelper.gson().toJson(obj);
             }
         } catch (Exception e) {
-            LOG.error("failed parse map to string ");
+            LOG.error("failed parse map to string . " + e.getMessage());
         }
         return "--";
     }
