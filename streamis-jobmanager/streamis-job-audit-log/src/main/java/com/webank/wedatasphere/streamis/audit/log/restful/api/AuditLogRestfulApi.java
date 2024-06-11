@@ -48,7 +48,6 @@ public class AuditLogRestfulApi {
                                    @RequestParam(value = "projectName",required = false) String projectName,
                                    @RequestParam(value = "jobName",required = false) String jobName
                                    ) {
-        String userName = ModuleUserUtils.getOperationUser(req, "Query job audit log");
         if(StringUtils.isBlank(projectName)){
             return Message.error("Project name cannot be empty(项目名不能为空，请指定)");
         }
