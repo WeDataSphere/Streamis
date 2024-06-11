@@ -32,7 +32,7 @@ public class SourceUtils {
 
         }
         try {
-            if (!Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE().getValue().toString())) {
+            if (!Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE().getHotValue().toString())) {
                 highAvailableVo.setHighAvailable(true);
                 highAvailableVo.setMsg("管理员未开启高可用配置");
                 return highAvailableVo;
