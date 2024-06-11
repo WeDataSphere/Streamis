@@ -43,17 +43,15 @@ public class StreamisErrorCodeHandler {
         Set<StreamErrorCode> errorCodeSet = new HashSet<>();
         List<StreamErrorCode> streamErrorCodes = StreamisErrorCodeCache.get("data");
         Runnable runnable =
-                () -> {
-                    Arrays.stream(log.split("\n"))
-                            .forEach(
-                                    singleLog -> {
-                                        Option<Tuple3<String, String,String>> match =
-                                                StreamisErrorCodeMatcher.errorMatch(streamErrorCodes, singleLog);
-                                        if (match.isDefined()) {
-                                            errorCodeSet.add(new StreamErrorCode(match.get()._1(), match.get()._2(),match.get()._3()));
-                                        }
-                                    });
-                };
+                () -> Arrays.stream(log.split("\n"))
+                        .forEach(
+                                singleLog -> {
+                                    Option<Tuple3<String, String,String>> match =
+                                            StreamisErrorCodeMatcher.errorMatch(streamErrorCodes, singleLog);
+                                    if (match.isDefined()) {
+                                        errorCodeSet.add(new StreamErrorCode(match.get()._1(), match.get()._2(),match.get()._3()));
+                                    }
+                                });
         Future<?> future = Utils.defaultScheduler().submit(runnable);
         try {
             future.get(futureTimeOut, TimeUnit.MILLISECONDS);

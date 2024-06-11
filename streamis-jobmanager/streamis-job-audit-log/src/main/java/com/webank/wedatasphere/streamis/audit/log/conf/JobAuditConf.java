@@ -4,6 +4,7 @@ import org.apache.linkis.common.conf.CommonVars;
 
 public class JobAuditConf {
 
+    private JobAuditConf(){}
     public static final CommonVars<Boolean> AUDIT_LOG_ENABLE = CommonVars.apply("wds.streamis.log.audit.store.enable", true);
 
     /*
