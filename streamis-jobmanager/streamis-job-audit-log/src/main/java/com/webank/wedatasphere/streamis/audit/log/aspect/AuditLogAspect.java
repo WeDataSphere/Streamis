@@ -178,7 +178,7 @@ public class AuditLogAspect {
                         break;
                     }
                 } catch (ClassCastException e) {
-
+                    LOG.warn("buildRequestParam: " + value + " failed. " + e.getMessage(), e);
                 }
             }
             if (!paramNames[i].equalsIgnoreCase("req") && !paramNames[i].equalsIgnoreCase("request")) {
@@ -189,7 +189,7 @@ public class AuditLogAspect {
     }
 
     private static <T> List<T> castList(Object obj, Class<T> clazz) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         if (obj instanceof List<?>) {
             for (Object o : (List<?>) obj) {
                 result.add(clazz.cast(o));
@@ -268,7 +268,7 @@ public class AuditLogAspect {
             Integer jobId = jobIdList.get(0);
             projectName = auditLogService.getProjectNameById(Long.valueOf(jobId));
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_STATUS.getUrl())) {
-            Map map = BDPJettyServerHelper.gson().fromJson(requestParams.get("requestMap").toString(), Map.class);
+            Map<String, Object> map = BDPJettyServerHelper.gson().fromJson(requestParams.get("requestMap").toString(), Map.class);
             List<Double> jobIds = (List<Double>) map.get("id_list");
             Long jobId = Math.round(jobIds.get(0));
             projectName = auditLogService.getProjectNameById(jobId);
@@ -283,26 +283,26 @@ public class AuditLogAspect {
         String projectName = "";
         Gson gson = BDPJettyServerHelper.gson();
         if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_LABEL.getUrl())) {
-            Map tasks = gson.fromJson(gson.toJson(requestParams.get("bulkUpdateLabelRequest")), Map.class);
+            Map<String, Object> tasks = gson.fromJson(gson.toJson(requestParams.get("bulkUpdateLabelRequest")), Map.class);
             List<Map<String, Object>> list = gson.fromJson(tasks.get("tasks").toString(), new TypeToken<List<Map<String, Object>>>() {
             }.getType());
             String jobId = list.get(0).get("id").toString();
             projectName = auditLogService.getProjectNameById((long) Double.parseDouble(jobId));
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_EXECUTE.getUrl())) {
-            Map map = gson.fromJson(requestParams.get("json").toString(), Map.class);
+            Map<String, Object> map = gson.fromJson(requestParams.get("json").toString(), Map.class);
             Long jobId = (long) Double.parseDouble(map.get("jobId").toString());
             projectName = auditLogService.getProjectNameById(jobId);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_CONTENT.getUrl())) {
-            Map contentRequest = gson.fromJson(gson.toJson(requestParams.get("contentRequest")), Map.class);
+            Map<String, Object> contentRequest = gson.fromJson(gson.toJson(requestParams.get("contentRequest")), Map.class);
             Long jobId = (long) Double.parseDouble(contentRequest.get("jobId").toString());
             projectName = auditLogService.getProjectNameById(jobId);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_BULK_EXECUTION.getUrl())) {
-            Map bulkRequest = gson.fromJson(gson.toJson(requestParams.get("execBulkRequest")), Map.class);
+            Map<String, Object> bulkRequest = gson.fromJson(gson.toJson(requestParams.get("execBulkRequest")), Map.class);
             List<Double> bulkSbjList = (List<Double>) bulkRequest.get("bulkSubject");
             Long jobId = Math.round(bulkSbjList.get(0));
             projectName = auditLogService.getProjectNameById(jobId);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_BULK_PAUSE.getUrl())) {
-            Map bulkRequest = gson.fromJson(gson.toJson(requestParams.get("pauseRequest")), Map.class);
+            Map<String, Object> bulkRequest = gson.fromJson(gson.toJson(requestParams.get("pauseRequest")), Map.class);
             List<Double> bulkSbjList = (List<Double>) bulkRequest.get("bulkSubject");
             Long jobId = Math.round(bulkSbjList.get(0));
             projectName = auditLogService.getProjectNameById(jobId);
@@ -315,10 +315,10 @@ public class AuditLogAspect {
             Long jobId = jobIdList.get(0);
             projectName = auditLogService.getProjectNameById(jobId);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_CREATE_OR_UPDATE.getUrl())) {
-            Map metaJsonInfo = gson.fromJson(gson.toJson(requestParams.get("metaJsonInfo")), Map.class);
+            Map<String, Object> metaJsonInfo = gson.fromJson(gson.toJson(requestParams.get("metaJsonInfo")), Map.class);
             projectName = metaJsonInfo.get("projectName").toString();
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_TASK.getUrl())) {
-            Map json = gson.fromJson(gson.toJson(requestParams.get("json")), Map.class);
+            Map<String, Object> json = gson.fromJson(gson.toJson(requestParams.get("json")), Map.class);
             projectName = json.get("projectName").toString();
         } else {
             projectName = requestParams.get("projectName").toString();
@@ -376,21 +376,21 @@ public class AuditLogAspect {
         String jobName = null;
         Gson gson = BDPJettyServerHelper.gson();
         if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_LABEL.getUrl())) {
-            Map tasks = gson.fromJson(gson.toJson(requestParams.get("bulkUpdateLabelRequest")), Map.class);
+            Map<String, Object> tasks = gson.fromJson(gson.toJson(requestParams.get("bulkUpdateLabelRequest")), Map.class);
             List<Map<String, Object>> list = gson.fromJson(tasks.get("tasks").toString(), new TypeToken<List<Map<String, Object>>>() {
             }.getType());
             String jobId = list.get(0).get("id").toString();
             jobName = auditLogService.getJobNameById((long) Double.parseDouble(jobId));
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_EXECUTE.getUrl())) {
-            Map map = gson.fromJson(requestParams.get("json").toString(), Map.class);
+            Map<String, Object> map = gson.fromJson(requestParams.get("json").toString(), Map.class);
             Long jobId = (long) Double.parseDouble(map.get("jobId").toString());
             jobName = auditLogService.getJobNameById(jobId);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_CONTENT.getUrl())) {
-            Map contentRequest = gson.fromJson(gson.toJson(requestParams.get("contentRequest")), Map.class);
+            Map<String, Object> contentRequest = gson.fromJson(gson.toJson(requestParams.get("contentRequest")), Map.class);
             Long jobId = (long) Double.parseDouble(contentRequest.get("jobId").toString());
             jobName = auditLogService.getJobNameById(jobId);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_BULK_EXECUTION.getUrl())) {
-            Map bulkRequest = gson.fromJson(gson.toJson(requestParams.get("execBulkRequest")), Map.class);
+            Map<String, Object> bulkRequest = gson.fromJson(gson.toJson(requestParams.get("execBulkRequest")), Map.class);
             List<Double> bulkSbjList = (List<Double>) bulkRequest.get("bulkSubject");
             List<Long> jobIds = bulkSbjList.stream().map(Math::round).collect(Collectors.toList());
             List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
@@ -407,10 +407,10 @@ public class AuditLogAspect {
             List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
             jobName = String.join(",", jobNames);
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_CREATE_OR_UPDATE.getUrl())) {
-            Map metaJsonInfo = gson.fromJson(gson.toJson(requestParams.get("metaJsonInfo")), Map.class);
+            Map<String, Object> metaJsonInfo = gson.fromJson(gson.toJson(requestParams.get("metaJsonInfo")), Map.class);
             jobName = metaJsonInfo.get("jobName").toString();
         } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_UPDATE_TASK.getUrl())) {
-            Map json = gson.fromJson(gson.toJson(requestParams.get("json")), Map.class);
+            Map<String, Object> json = gson.fromJson(gson.toJson(requestParams.get("json")), Map.class);
             jobName = json.get("jobName").toString();
         } else {
             if (requestParams.get("jobId") != null){
@@ -420,15 +420,6 @@ public class AuditLogAspect {
             }
         }
         return jobName;
-    }
-
-    private Map<String, Object> parseJsonToMap(String json) {
-        try {
-            return BDPJettyServerHelper.jacksonJson().readValue(json, Map.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Collections.emptyMap();
-        }
     }
 
     private String parseObjectToString(Object obj) {
