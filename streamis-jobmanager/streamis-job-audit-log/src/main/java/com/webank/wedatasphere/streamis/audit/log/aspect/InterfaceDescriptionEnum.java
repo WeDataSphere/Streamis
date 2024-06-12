@@ -74,22 +74,11 @@ public enum InterfaceDescriptionEnum {
 
     private static final Map<String, String> urlDescriptionMap = new HashMap<>();
 
-    private static final Set<String> ALLOWED_URIS = new HashSet<>();
-
     static {
         for (InterfaceDescriptionEnum interfaceDescription : InterfaceDescriptionEnum.values()) {
             urlDescriptionMap.put(interfaceDescription.getUrl(), interfaceDescription.getDescription());
         }
-        ALLOWED_URIS.add(InterfaceDescriptionEnum.JOB_STOP.getUrl());
-        ALLOWED_URIS.add(InterfaceDescriptionEnum.PROJECT_FILES_DELETE.getUrl());
-        ALLOWED_URIS.add(InterfaceDescriptionEnum.PROJECT_FILES_VERSION_DELETE.getUrl());
-        ALLOWED_URIS.add(InterfaceDescriptionEnum.PROJECT_FILES_DOWNLOAD.getUrl());
     }
-
-    public static Set<String> getAllowedUriSet() {
-        return ALLOWED_URIS;
-    }
-
     public static String getDescriptionByUrl(String url) {
         if (urlDescriptionMap.containsKey(url)) {
             return urlDescriptionMap.get(url);

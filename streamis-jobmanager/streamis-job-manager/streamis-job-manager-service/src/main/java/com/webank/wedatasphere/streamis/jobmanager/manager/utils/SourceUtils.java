@@ -20,7 +20,7 @@ public class SourceUtils {
         highAvailablePolicy = Optional.ofNullable(highAvailablePolicy).orElse(JobConf.HIGHAVAILABLE_DEFAULT_POLICY().getHotValue());
         JobHighAvailableVo highAvailableVo = new JobHighAvailableVo();
         if (source.equalsIgnoreCase("update args")) {
-            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getValue().toString())){
+            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getHotValue().toString())){
                 highAvailableVo.setHighAvailable(true);
                 highAvailableVo.setMsg("用户在页面手动修改args,跳过一致性检查");
                 return highAvailableVo;
@@ -50,7 +50,7 @@ public class SourceUtils {
                             highAvailableVo.setMsg(map.getOrDefault("highAvailableMessage","高可用信息为空，请联系管理员").toString());
                             return highAvailableVo;
                         } else {
-                            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getValue().toString())){
+                            if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getHotValue().toString())){
                                 highAvailableVo.setHighAvailable(true);
                                 highAvailableVo.setMsg("非标准来源,不检测高可用");
                                 return highAvailableVo;
@@ -61,7 +61,7 @@ public class SourceUtils {
                             }
                         }
                     } else {
-                        if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getValue().toString())){
+                        if(Boolean.parseBoolean(JobConf.HIGHAVAILABLE_ENABLE_INTERFACE_UPLOAD().getHotValue().toString())){
                             highAvailableVo.setHighAvailable(true);
                             highAvailableVo.setMsg("非标准来源,不检测高可用");
                             return highAvailableVo;
