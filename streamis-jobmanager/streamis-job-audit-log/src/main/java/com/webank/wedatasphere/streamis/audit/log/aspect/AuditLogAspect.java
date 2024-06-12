@@ -119,9 +119,6 @@ public class AuditLogAspect {
 
 
     private void logAuditInformation(String requestURI, String requestParams, String result, String proxyUser, String userName, String method, String projectName, long costTimeMills,String jobName) {
-        if ("GET".equalsIgnoreCase(method) && !InterfaceDescriptionEnum.getAllowedUriSet().contains(requestURI)){
-            return;
-        }
         String apiDesc = InterfaceDescriptionEnum.getDescriptionByUrl(requestURI);
         String clientIp = getClientIp();
         StreamAuditLog auditLog = new StreamAuditLog();
@@ -355,13 +352,20 @@ public class AuditLogAspect {
                     .collect(Collectors.toList());
             List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
             return String.join(",", jobNames);
-        }  else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_STATUS.getUrl())) {
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_STATUS.getUrl())) {
             Map map = BDPJettyServerHelper.gson().fromJson(requestParams.get("requestMap").toString(), Map.class);
             List<Double> jobIdDouble = (List<Double>) map.get("id_list");
             List<Long> jobIds = jobIdDouble.stream().map(Math::round).collect(Collectors.toList());
             List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
             return String.join(",", jobNames);
-        }else {
+        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_SNAPSHOT.getUrl())){
+            if (requestParams.get("jobId") != null){
+                String jobIdStr = requestParams.get("jobId").toString();
+                Long jobId = Long.valueOf(jobIdStr);
+                return auditLogService.getJobNameById(jobId);
+            }
+            return null;
+        } else {
             String jobIdStr = req.getParameter("jobId");
             if (StringUtils.isNotBlank(jobIdStr)) {
                 Long jobId = Long.valueOf(jobIdStr);
