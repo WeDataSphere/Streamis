@@ -249,7 +249,6 @@ class DefaultStreamJobService extends StreamJobService with Logging {
     }else{
       throw new JobCreateErrorException(30030,s"meta_json does not contain jobConfig, please check")
     }
-//    this.streamJobConfService.saveJobConfig(version.getJobId, finalJobConfig.asInstanceOf[util.Map[String, AnyRef]])
     //  上传所有非meta.json的文件
     uploadFiles(metaJsonInfo, version, inputZipPath)
     version
@@ -261,7 +260,6 @@ class DefaultStreamJobService extends StreamJobService with Logging {
     val validateResult = validateJobDeploy(metaJsonInfo.getProjectName, metaJsonInfo.getJobName, userName)
     val readerUtils = new ReaderUtils
     metaJsonInfo.setMetaInfo(readerUtils.readAsJson(metaJsonInfo))
-    val projectName = metaJsonInfo.getProjectName
     val version = deployStreamJob(validateResult.streamJob, metaJsonInfo, userName, validateResult.updateVersion)
     // Save the job configuration, lock the job again if exists
     if (null != metaJsonInfo.getJobConfig){
@@ -296,7 +294,6 @@ class DefaultStreamJobService extends StreamJobService with Logging {
 
   override def updateArgs(jobId: Long, version: String,args: util.List[String],isHighAvailable: Boolean, highAvailableMessage: String): StreamisTransformJobContent = {
     val jobVersion =streamJobMapper.getLatestJobVersion(jobId)
-    val checkContent = getJobContent(jobId, jobVersion.getVersion)
     val streamJob = streamJobMapper.queryJobById(jobId)
     val jobContent = jobVersion.getJobContent
     if (args != null){
@@ -428,7 +425,7 @@ class DefaultStreamJobService extends StreamJobService with Logging {
 
   override def canBeDisabled(jobId: Long): Boolean = {
     val streamJob = streamJobMapper.getJobById(jobId);
-    if(streamJob == null) throw new JobFetchErrorException(30030, s"job does not exist.")
+    if(streamJob == null) throw new JobFetchErrorException(30030, s"job does not exist,please check.")
     //处理job是首次上传且未被启动的情况
     if (streamJob.getStatus == 0){
       val streamTask = this.streamTaskMapper.getLatestByJobId(jobId)
@@ -458,7 +455,7 @@ class DefaultStreamJobService extends StreamJobService with Logging {
 
   override def canbeActivated(jobId: Long): Boolean = {
     val streamJob = streamJobMapper.getJobById(jobId)
-    if(streamJob == null) throw new JobFetchErrorException(30030, s"job does not exist.")
+    if(streamJob == null) throw new JobFetchErrorException(30030, s"job does not exist,check.")
     if (streamJob.getEnable){
       false
     } else {
