@@ -132,6 +132,10 @@ public class JobRestfulApi {
     @RequestMapping(path = "/jobInfo", method = RequestMethod.GET)
     public Message getJobList(HttpServletRequest req,
                               @RequestParam(value = "jobId", required = false) Integer jobId){
+        String username = ModuleUserUtils.getOperationUser(req, "jobInfo");
+        if (StringUtils.isBlank(username)) {
+            return Message.error("invalid user.");
+        }
         StreamJob streamJob = streamJobService.getJobById(jobId);
         return Message.ok().data("jobInfo",streamJob);
     }

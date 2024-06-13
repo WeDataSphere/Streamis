@@ -23,6 +23,8 @@ public class RpcHeartbeatService {
 
     private CloseableHttpClient httpClient = HttpClients.createDefault();
 
+    private ScheduledThreadPoolExecutor scheduler;
+
     public RpcHeartbeatService(StreamisLogAppenderConfig logAppenderConfig) {
         this.logAppenderConfig = logAppenderConfig;
     }
@@ -47,7 +49,7 @@ public class RpcHeartbeatService {
             return;
         }
         System.out.println("Start to heart register.");
-        ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1, threadFactory("Streamis-Log-Default-Scheduler-Thread-", true));
+        this.scheduler = new ScheduledThreadPoolExecutor(1, threadFactory("Streamis-Log-Default-Scheduler-Thread-", true));
         scheduler.setMaximumPoolSize(1);
         scheduler.setKeepAliveTime(30, TimeUnit.MINUTES);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

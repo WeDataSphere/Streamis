@@ -74,6 +74,7 @@ public class JobLogRestfulApi {
         if (StringUtils.isBlank(applicationName)){
             return Message.ok("Ignore the stream log heartbeat OR register without application name");
         }
+        String userName = checkPermissions(request);
         if (streamisHeartbeat.getSign().equals("register")){
             String password =streamisHeartbeat.getPasswordOrHeartbeat();
             byte[] decodedBytes = Base64.getDecoder().decode(password);
