@@ -426,6 +426,8 @@ class DefaultStreamTaskService extends StreamTaskService with Logging{
     val hookExtraParams = new util.HashMap[String, Object]()
     hookExtraParams.put(JobShutdownHookConstants.START_TIME_MILLS_KEY, streamTask.getStartTime.getTime.toString)
     hookExtraParams.put(JobShutdownHookConstants.STATUS_KEY, JobConf.getStatusString(streamTask.getStatus))
+    //            hookExtraParams.put(JobShutdownHookConstants.ENGINE_TYPE_KEY, streamJob.getEngineType)
+    //            hookExtraParams.put(JobShutdownHookConstants.ENGINE_TYPE_KEY, streamJob.getEngineVersion)
     val jobInfo = DWSHttpClient.jacksonJson.readValue(streamTask.getLinkisJobInfo, classOf[EngineConnJobInfo])
     hookExtraParams.put(JobShutdownHookConstants.APPLICATION_ID_KEY, jobInfo.getApplicationId)
     hookExtraParams.put(JobShutdownHookConstants.APPLICATION_URL_KEY, jobInfo.getApplicationUrl)
@@ -444,6 +446,7 @@ class DefaultStreamTaskService extends StreamTaskService with Logging{
           }
         }
         hookFuture = Utils.defaultScheduler.submit(hookTask)
+        hookFuture.get(JobManagerConf.JOB_SHUTDOWN_HOOK_TIMEOUT_MILLS.getHotValue(), TimeUnit.MILLISECONDS)
         logger.info(s"hook : ${hook.getName} outside succeed, costed ${System.currentTimeMillis() - hookStartTimeMills}mills.")
       } {
         case e: Exception =>
@@ -1028,6 +1031,7 @@ class DefaultStreamTaskService extends StreamTaskService with Logging{
 
   override def generateJobStartConfig(job: StreamJob, jobVersion: StreamJobVersion, creator: String,jobTemplate: JobTemplateFiles): String = {
     val metaJsonInfo = new MetaJsonInfo
+    //    metaJsonInfo.setWorkspaceName(job.getWorkspaceName)
     metaJsonInfo.setProjectName(job.getProjectName)
     metaJsonInfo.setJobName(job.getName)
     metaJsonInfo.setJobType(job.getJobType)
