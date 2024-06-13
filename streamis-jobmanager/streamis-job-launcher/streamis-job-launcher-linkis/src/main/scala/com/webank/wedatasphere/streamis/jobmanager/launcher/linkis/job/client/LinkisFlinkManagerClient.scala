@@ -310,14 +310,6 @@ class LinkisFlinkManagerClient extends FlinkManagerClient with Logging {
         null
     }
 
-  private def getManagerInstance(nodeInfo: util.Map[String, Any]): ServiceInstance =
-    nodeInfo.getOrDefault(ECConstants.MANAGER_SERVICE_INSTANCE_KEY, null) match {
-      case serviceInstance: ServiceInstance =>
-        serviceInstance
-      case _ =>
-        null
-    }
-
   private def getAs[T](map: util.Map[String, Any], key: String): T =
     map.getOrDefault(key, null).asInstanceOf[T]
 

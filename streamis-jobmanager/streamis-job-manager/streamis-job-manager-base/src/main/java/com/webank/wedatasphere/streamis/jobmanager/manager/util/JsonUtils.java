@@ -11,10 +11,11 @@ import java.util.Map;
 
 public class JsonUtils {
 
+    private JsonUtils(){}
     private static final Logger LOG = LoggerFactory.getLogger(JsonUtils.class);
     public static String manageArgs(String jobContent, List<String> args){
         try {
-            Map map = BDPJettyServerHelper.gson().fromJson(jobContent, Map.class);
+            Map<String,Object> map = BDPJettyServerHelper.gson().fromJson(jobContent, Map.class);
             map.put("args",args);
             return BDPJettyServerHelper.gson().toJson(map);
         }  catch (JsonSyntaxException e) {

@@ -35,12 +35,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ReaderUtils {
-    private static final String metaFileName = "meta.txt";
+
     private static final String metaFileJsonName = "meta.json";
 
     private static final String templateMetaFileJsonName = "-meta.json";
     private static final String type = "type";
-    private static final String fileName = "filename";
     private static final String projectName = "projectname";
     private static final String jobName = "jobname";
     private static final String tags = "tags";

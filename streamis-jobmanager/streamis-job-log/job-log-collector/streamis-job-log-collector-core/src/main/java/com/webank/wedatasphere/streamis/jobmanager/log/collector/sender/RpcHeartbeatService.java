@@ -27,8 +27,6 @@ public class RpcHeartbeatService {
         this.logAppenderConfig = logAppenderConfig;
     }
 
-    private ScheduledThreadPoolExecutor scheduler;
-
     private ThreadFactory threadFactory(String threadName, Boolean isDaemon) {
         return new ThreadFactory() {
             AtomicInteger num = new AtomicInteger(0);
@@ -49,7 +47,7 @@ public class RpcHeartbeatService {
             return;
         }
         System.out.println("Start to heart register.");
-        this.scheduler = new ScheduledThreadPoolExecutor(1, threadFactory("Streamis-Log-Default-Scheduler-Thread-", true));
+        ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1, threadFactory("Streamis-Log-Default-Scheduler-Thread-", true));
         scheduler.setMaximumPoolSize(1);
         scheduler.setKeepAliveTime(30, TimeUnit.MINUTES);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
