@@ -557,7 +557,7 @@ public abstract class AbstractRpcLogSender<T extends LogElement, E> implements R
                     System.out.println("cacheWait: " + cacheWaitTime.get() + ", takeWait:" + takeWaitTime.get() + ", discarded: " + discardCount);
                 }
                 if (takeWaitTime.get() <= 0 && process.get() > 0){
-                    this.control.set((long) ((double)process.get() * ((double)controlInterval / (double)interval)));
+                    this.control.set((long) (process.get() * ((double)controlInterval / (double)interval)));
                     if (rpcSenderConfig.isDebugMode()) {
                         System.out.println("new window control: " + this.control.get());
                     }

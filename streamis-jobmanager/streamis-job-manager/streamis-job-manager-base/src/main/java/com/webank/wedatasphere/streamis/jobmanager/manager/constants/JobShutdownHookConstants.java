@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.streamis.jobmanager.manager.constants;
 
 public class JobShutdownHookConstants {
-
+    private JobShutdownHookConstants(){}
     public static final String START_TIME_MILLS_KEY = "startTimeMills";
 
     public static final String STATUS_KEY = "status";
