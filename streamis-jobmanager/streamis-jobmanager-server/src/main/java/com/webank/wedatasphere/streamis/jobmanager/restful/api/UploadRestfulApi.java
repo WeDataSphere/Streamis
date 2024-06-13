@@ -95,7 +95,7 @@ public class UploadRestfulApi {
         if(!ZipHelper.isZip(fileName)){
             throw JobExceptionManager.createException(30302);
         }
-        if ((Boolean) JobConf.STANDARD_AUTHENTICATION_KEY().getHotValue()){
+        if ((boolean) JobConf.STANDARD_AUTHENTICATION_KEY().getHotValue()){
             if (!highAvailableService.confirmToken(source)){
                 return Message.error("As this job is not from standard release, it is not allowed to upload");
             }

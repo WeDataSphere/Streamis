@@ -90,6 +90,10 @@ public class JobRestfulApi {
     @Resource
     private ProjectPrivilegeService privilegeService;
 
+    private static final String JOB_ID = "jobId";
+
+    private static final String SUCCESS_MSG = "success";
+
     @RequestMapping(path = "/list", method = RequestMethod.GET)
     public Message getJobList(HttpServletRequest req,
                               @RequestParam(value = "pageNow", required = false) Integer pageNow,
@@ -128,7 +132,6 @@ public class JobRestfulApi {
     @RequestMapping(path = "/jobInfo", method = RequestMethod.GET)
     public Message getJobList(HttpServletRequest req,
                               @RequestParam(value = "jobId", required = false) Integer jobId){
-        String username = ModuleUserUtils.getOperationUser(req, "jobInfo");
         StreamJob streamJob = streamJobService.getJobById(jobId);
         return Message.ok().data("jobInfo",streamJob);
     }
@@ -144,12 +147,12 @@ public class JobRestfulApi {
             return Message.error("Have no permission to create or update StreamJob in project [" + projectName + "]");
         }
         StreamJobVersion job = streamJobService.createOrUpdate(username, metaJsonInfo);
-        return Message.ok().data("jobId", job.getJobId());
+        return Message.ok().data(JOB_ID, job.getJobId());
     }
 
     @RequestMapping(path = "/updateLabel", method = RequestMethod.POST)
     public Message updateLabel(HttpServletRequest req, @RequestBody BulkUpdateLabelRequest bulkUpdateLabelRequest) {
-        Message result = Message.ok("success");
+        Message result = Message.ok(SUCCESS_MSG);
 
         String userName = ModuleUserUtils.getOperationUser(req, "update Label");
         List<BulkUpdateLabel> tasksData = bulkUpdateLabelRequest.getTasks();
@@ -159,10 +162,10 @@ public class JobRestfulApi {
             StreamJob streamJob = this.streamJobService.getJobById(jobId);
             if (!streamJobService.isCreator(jobId, userName) &&
                     !this.privilegeService.hasEditPrivilege(req, streamJob.getProjectName())) {
-                return Message.error("Have no permission to save StreamJob [" + jobId + "] configuration");
+                return Message.error("Have no permission to save the configuration of StreamJob [" + jobId + "]");
             }
             if (!streamJobService.getEnableStatus(jobId)){
-                return Message.error("current Job " + streamJob.getName() + "has been banned, cannot updateLable,please enable job" );
+                return Message.error("The Job " + streamJob.getName() + "has been banned, cannot updateLable,please enable job" );
             }
             String label = bulkUpdateLabel.getLabel();
             if (!RegularUtil.matches(label))
@@ -217,7 +220,7 @@ public class JobRestfulApi {
     public Message version(HttpServletRequest req, @RequestParam(value = "jobId", required = false) Long jobId,
                            @RequestParam(value = "version", required = false) String version) throws JobException {
         if (jobId == null) {
-            throw JobExceptionManager.createException(30301, "jobId");
+            throw JobExceptionManager.createException(30301, JOB_ID);
         }
         if (StringUtils.isEmpty(version)) {
             throw JobExceptionManager.createException(30301, "version");
@@ -235,7 +238,7 @@ public class JobRestfulApi {
     @RequestMapping(path = "/ban", method = RequestMethod.POST)
     public Message banJob(HttpServletRequest req, @RequestBody List<Long> jobIdList) {
         String userName = ModuleUserUtils.getOperationUser(req, "ban job");
-        Message result = Message.ok("success");
+        Message result = Message.ok(SUCCESS_MSG);
 
         HashMap<Long,StreamJob> jobMap = new HashMap<>();
         if (jobIdList.size() > 100){
@@ -257,7 +260,7 @@ public class JobRestfulApi {
                     return Message.error("Have no permission to ban StreamJob [" + jobId + "] configuration");
                 }
                 if (!streamJobService.canBeDisabled(jobId)){
-                    return Message.error("current job [" + jobId + "] can not be banned, please check");
+                    return Message.error("Job [" + jobId + "] can not be banned, please check");
                 }
             }
             for (Long jobId : jobIdList) {
@@ -274,7 +277,7 @@ public class JobRestfulApi {
     @RequestMapping(path = "/enable", method = RequestMethod.POST)
     public Message enableJob(HttpServletRequest req, @RequestBody List<Long> jobIdList) {
         String userName = ModuleUserUtils.getOperationUser(req, "ban job");
-        Message result = Message.ok("success");
+        Message result = Message.ok(SUCCESS_MSG);
 
         HashMap<Long,StreamJob> jobMap = new HashMap<>();
         if (jobIdList.size() > 100){
@@ -297,7 +300,7 @@ public class JobRestfulApi {
                     return Message.error("Have no permission to ban StreamJob [" + jobId + "] configuration");
                 }
                 if (!streamJobService.canbeActivated(jobId)){
-                    return Message.error("current job [" + jobId + "] can not be activated, please check");
+                    return Message.error("Present job [" + jobId + "] can not be activated, please check");
                 }
             }
             for (Long jobId : jobIdList) {
@@ -337,7 +340,7 @@ public class JobRestfulApi {
                 return Message.error("The system does not enable the detach feature ,detach job cannot start [" + jobId + "]");
             }
             if (!streamJobService.getEnableStatus(jobId)){
-                return Message.error("current Job " + streamJob.getName() + "has been banned, cannot start,please enable job" );
+                return Message.error("The Job " + streamJob.getName() + "has been banned, cannot start,please enable job" );
             }
             try {
                 HashMap<String, Object> jobConfig = new HashMap<>(this.streamJobConfService.getJobConfig(jobId));
@@ -404,10 +407,10 @@ public class JobRestfulApi {
     @RequestMapping(path = "/execute", method = RequestMethod.POST)
     public Message executeJob(HttpServletRequest req, @RequestBody Map<String, Object> json) throws JobException {
         String userName = ModuleUserUtils.getOperationUser(req, "execute job");
-        if (!json.containsKey("jobId") || json.get("jobId") == null) {
-            throw JobExceptionManager.createException(30301, "jobId");
+        if (!json.containsKey(JOB_ID) || json.get(JOB_ID) == null) {
+            throw JobExceptionManager.createException(30301, JOB_ID);
         }
-        long jobId = Long.parseLong(json.get("jobId").toString());
+        long jobId = Long.parseLong(json.get(JOB_ID).toString());
         LOG.info("{} try to execute job {}.", userName, jobId);
         StreamJob streamJob = this.streamJobService.getJobById(jobId);
         if(streamJob == null) {
@@ -430,15 +433,13 @@ public class JobRestfulApi {
             return Message.error("The master and backup cluster materials for" + "Job " + streamJob.getName() + "do not match, please check the material");
         }
         if (!streamJobService.getEnableStatus(jobId)){
-            return Message.error("current Job " + streamJob.getName() + "has been banned, cannot start,please enable job" );
+            return Message.error("Job " + streamJob.getName() + "has been banned, cannot start,please enable job" );
         }
         if(!highAvailableService.canBeStarted(jobId)){
             return Message.error("current Job " + streamJob.getName() + " is in managerSlave mode,please check whether it runs on manager cluster" );
         }
-        if((Boolean) JobConf.PRODUCT_NAME_SWITCH().getHotValue()){
-            if(StringUtils.isNotBlank(streamJobConfService.getJobConfValue(jobId,JobConf.PRODUCT_NAME_KEY().getHotValue())) && !RegularUtil.matchesProductName(streamJobConfService.getJobConfValue(jobId,JobConf.PRODUCT_NAME_KEY().getHotValue()))){
-                return Message.error("The product name of the job is not configured correctly, please check");
-            }
+        if((boolean) JobConf.PRODUCT_NAME_SWITCH().getHotValue() && StringUtils.isNotBlank(streamJobConfService.getJobConfValue(jobId,JobConf.PRODUCT_NAME_KEY().getHotValue())) && !RegularUtil.matchesProductName(streamJobConfService.getJobConfValue(jobId,JobConf.PRODUCT_NAME_KEY().getHotValue()))){
+            return Message.error("The product name of the job is not configured correctly, please check");
         }
         try {
             streamTaskService.execute(jobId, 0L, userName);
@@ -457,7 +458,7 @@ public class JobRestfulApi {
         String userName = ModuleUserUtils.getOperationUser(req, "stop the job");
         snapshot = !Objects.isNull(snapshot) && snapshot;
         if (jobId == null) {
-            throw JobExceptionManager.createException(30301, "jobId");
+            throw JobExceptionManager.createException(30301, JOB_ID);
         }
         LOG.info("{} try to kill job {}.", userName, jobId);
         StreamJob streamJob = this.streamJobService.getJobById(jobId);
@@ -469,7 +470,7 @@ public class JobRestfulApi {
             return Message.error("Have no permission to kill/stop StreamJob [" + jobId + "]");
         }
         if (!streamJobService.getEnableStatus(jobId)){
-            return Message.error("current Job " + streamJob.getName() + "has been banned, cannot stop,please enable job" );
+            return Message.error("Existing Job " + streamJob.getName() + "has been banned, cannot stop,please enable job" );
         }
         if(JobConf.SUPPORTED_MANAGEMENT_JOB_TYPES().getValue().contains(streamJob.getJobType())) {
             try {
@@ -489,7 +490,7 @@ public class JobRestfulApi {
     public Message detailsJob(HttpServletRequest req, @RequestParam(value = "jobId", required = false) Long jobId,
                               @RequestParam(value = "version", required = false) String version) throws JobException, JsonProcessingException {
         if (jobId == null) {
-            JobExceptionManager.createException(30301, "jobId");
+            JobExceptionManager.createException(30301, JOB_ID);
         }
         String username = ModuleUserUtils.getOperationUser(req, "view the job details");
         StreamJob streamJob = streamJobService.getJobById(jobId);
@@ -511,7 +512,7 @@ public class JobRestfulApi {
                                      @RequestParam(value = "version", required = false) String version) throws JobException {
         String username = ModuleUserUtils.getOperationUser(req, "view the job history");
         if (jobId == null) {
-            throw JobExceptionManager.createException(30301, "jobId");
+            throw JobExceptionManager.createException(30301, JOB_ID);
         }
         if (StringUtils.isEmpty(version)) {
             throw JobExceptionManager.createException(30301, "version");
@@ -536,7 +537,7 @@ public class JobRestfulApi {
                                      @RequestParam(value = "jobId", required = false) Long jobId) throws JobException {
         String username = ModuleUserUtils.getOperationUser(req, "view the job history");
         if (jobId == null) {
-            throw JobExceptionManager.createException(30301, "jobId");
+            throw JobExceptionManager.createException(30301, JOB_ID);
         }
         StreamJob streamJob = this.streamJobService.getJobById(jobId);
         if (!streamJobService.hasPermission(streamJob, username) &&
@@ -737,7 +738,7 @@ public class JobRestfulApi {
                                @RequestParam(value = "version", required = false) String version) throws JobException {
         String username = ModuleUserUtils.getOperationUser(req, "view the job's progress");
         if (jobId == null) {
-            throw JobExceptionManager.createException(30301, "jobId");
+            throw JobExceptionManager.createException(30301, JOB_ID);
         }
         StreamJob streamJob = this.streamJobService.getJobById(jobId);
         if(streamJob == null) {
@@ -777,7 +778,7 @@ public class JobRestfulApi {
             return Message.error("Have no permission to update job details of StreamJob [" + jobId + "]");
         }
         if (!streamJobService.getEnableStatus(jobId)){
-            return Message.error("current Job " + streamJob.getName() + "has been banned, cannot update,please enable job" );
+            return Message.error("Existing Job " + streamJob.getName() + "has been banned, cannot update,please enable job" );
         }
         List<String> args = contentRequest.getArgs();
         if (args == null){
@@ -786,7 +787,7 @@ public class JobRestfulApi {
             StreamisTransformJobContent jobContent = streamJobService.updateArgs(jobId, version,null,isHighAvailable,highAvailableMessage);
             return Message.ok().data("jobContent", jobContent);
         } else {
-            if (!(Boolean) JobConf.JOB_CONTENT_EDIT_ENABLE().getHotValue()){
+            if (!(boolean) JobConf.JOB_CONTENT_EDIT_ENABLE().getHotValue()){
                 return Message.error("job args cannot be changed,please contact the admin for advice");
             }
             int hotValue =  Integer.parseInt(JobConf.DEFAULT_ARGS_LENGTH().getHotValue().toString());
@@ -836,7 +837,7 @@ public class JobRestfulApi {
                           @RequestParam(value = "logType", required = false) String logType,
                           @RequestParam(value = "lastRows", defaultValue = "0") Integer lastRows) throws JobException {
         if (jobId == null) {
-            throw JobExceptionManager.createException(30301, "jobId");
+            throw JobExceptionManager.createException(30301, JOB_ID);
         }
         logType = StringUtils.isBlank(logType) ? "client" : logType;
         String username = ModuleUserUtils.getOperationUser(req, "view job logs");
@@ -872,7 +873,7 @@ public class JobRestfulApi {
         if (Objects.isNull(jobIds) || jobIds.isEmpty()){
             return Message.error("The list of job id which to refresh the status cannot be null or empty");
         }
-        Message result = Message.ok("success");
+        Message result = Message.ok(SUCCESS_MSG);
         try{
             result.data("result", this.streamTaskService.getStatusList(new ArrayList<>(jobIds)));
         }catch (Exception e){
