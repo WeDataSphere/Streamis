@@ -169,7 +169,8 @@ class TaskMonitorService extends Logging {
               alertMsg = s"${alertMsg} 现将自动拉起该应用"
               restartJob(job,streamTask)
             case _ =>
-              if (JobConf.AUTO_RESTART_JOB.getHotValue() && !highAvailablePolicy.equals(JobConf.HIGHAVAILABLE_POLICY_SINGLE_BAK.getValue) && !highAvailablePolicy.equals(JobConf.HIGHAVAILABLE_DEFAULT_POLICY.getValue)) {
+              if (JobConf.AUTO_RESTART_JOB.getHotValue() && !highAvailablePolicy.equals(JobConf.HIGHAVAILABLE_POLICY_SINGLE_BAK.getValue)
+                && !highAvailablePolicy.equals(JobConf.HIGHAVAILABLE_DEFAULT_POLICY.getValue)) {
                 alertMsg = s"${alertMsg} 现将自动拉起该应用"
                 restartJob(job,streamTask)
               }

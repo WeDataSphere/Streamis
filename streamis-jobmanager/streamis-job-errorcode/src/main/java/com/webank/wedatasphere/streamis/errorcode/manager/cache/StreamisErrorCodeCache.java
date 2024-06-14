@@ -8,10 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StreamisErrorCodeCache {
-
-    private StreamisErrorCodeCache(){
-        // Private constructor to prevent instantiation
-    }
     private static Map<String, List<StreamErrorCode>> cache = new ConcurrentHashMap<>();
 
     public static void put(String key, List<StreamErrorCode> value) {

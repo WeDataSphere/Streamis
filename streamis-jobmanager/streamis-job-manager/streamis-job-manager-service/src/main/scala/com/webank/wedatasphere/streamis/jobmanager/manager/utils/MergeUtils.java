@@ -11,8 +11,6 @@ import java.util.Stack;
 public class MergeUtils {
     private static final String JOB_CONFIG = "jobConfig";
 
-    private MergeUtils(){}
-
     public static void merge(Map<String, Object> destination, Map<String, Object> source) {
         Deque<Map<String, Object>> stackDest = new ArrayDeque<>();
         Deque<Map<String, Object>> stackSrc = new ArrayDeque<>();

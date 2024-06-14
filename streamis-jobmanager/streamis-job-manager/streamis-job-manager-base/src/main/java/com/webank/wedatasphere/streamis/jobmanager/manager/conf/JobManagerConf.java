@@ -10,10 +10,6 @@ import java.util.*;
 
 public class JobManagerConf {
 
-    private JobManagerConf(){
-        // Private constructor to prevent instantiation
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(JobManagerConf.class);
 
     private static Map<String, List<String>> hookProjectMap = null;
