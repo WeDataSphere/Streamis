@@ -46,6 +46,8 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
     }
 
     @Override
-    public void destroy() throws Exception {}
+    public void destroy() throws Exception {
+        applicationContext = null;
+    }
 
 }

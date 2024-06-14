@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class StreamisJobShutdownHookFactory {
-    private StreamisJobShutdownHookFactory(){}
+
     private static final Logger logger = LoggerFactory.getLogger(StreamisJobShutdownHookFactory.class);
 
     private static final Map<String, StreamisJobShutdownHook> hookMap = new HashMap<>();
