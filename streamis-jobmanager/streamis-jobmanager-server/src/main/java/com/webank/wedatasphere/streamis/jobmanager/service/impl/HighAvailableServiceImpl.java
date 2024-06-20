@@ -86,14 +86,12 @@ public class HighAvailableServiceImpl implements HighAvailableService {
         Optional<String> sourceOption = Optional.ofNullable(source);
         if(sourceOption.isPresent() && JsonUtil.isJson(sourceOption.get())) {
             String sourceStr = sourceOption.get();
-            Map sourceMap = BDPJettyServerHelper.gson().fromJson(sourceStr, Map.class);
+            Map<String,Object> sourceMap = BDPJettyServerHelper.gson().fromJson(sourceStr, Map.class);
             if (sourceMap.containsKey("source")) {
                 String sourceValue = sourceMap.get("source").toString();
-                if (sourceValue.equals(JobConf.HIGHAVAILABLE_SOURCE().getValue())) {
-                    if (sourceMap.containsKey("token")) {
-                        String tokenContent = sourceMap.get("token").toString();
-                        return tokenContent.equals(JobConf.HIGHAVAILABLE_TOKEN().getValue());
-                    }
+                if (sourceValue.equals(JobConf.HIGHAVAILABLE_SOURCE().getValue()) && sourceMap.containsKey("token")) {
+                    String tokenContent = sourceMap.get("token").toString();
+                    return tokenContent.equals(JobConf.HIGHAVAILABLE_TOKEN().getValue());
                 }
             }
         }
