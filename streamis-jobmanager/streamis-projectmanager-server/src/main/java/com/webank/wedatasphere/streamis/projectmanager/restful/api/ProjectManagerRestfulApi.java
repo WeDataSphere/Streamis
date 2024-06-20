@@ -73,6 +73,8 @@ public class ProjectManagerRestfulApi {
 
     private static final String templateName = "-meta.json";
 
+    private static final String NULL_PROJECT_NAME = "projectName is null";
+
     @RequestMapping(path = "/files/upload", method = RequestMethod.POST)
     public Message upload(HttpServletRequest req,
                            @RequestParam(name = "version",required = false) String version,
@@ -86,7 +88,7 @@ public class ProjectManagerRestfulApi {
             return Message.error("version is null");
         }
         if (StringUtils.isBlank(projectName)) {
-            return Message.error("projectName is null");
+            return Message.error(NULL_PROJECT_NAME);
         }
         if (StringUtils.isBlank(source)) {
             LOG.info("source的值为空");
@@ -97,10 +99,8 @@ public class ProjectManagerRestfulApi {
         if (!projectPrivilegeService.hasEditPrivilege(req,projectName)) {
             return Message.error(NO_OPERATION_PERMISSION_MESSAGE);
         }
-        if ((Boolean) JobConf.STANDARD_AUTHENTICATION_KEY().getHotValue()){
-            if (!projectManagerService.confirmToken(source)){
-                return Message.error("As this file is not from standard release, it is not allowed to upload");
-            }
+        if ((boolean) JobConf.STANDARD_AUTHENTICATION_KEY().getHotValue() && !projectManagerService.confirmToken(source)){
+            return Message.error("As this file is not from standard release, it is not allowed to upload");
         }
         //Only uses 1st file(只取第一个文件)
         MultipartFile p = files.get(0);
@@ -157,7 +157,7 @@ public class ProjectManagerRestfulApi {
                          @RequestParam(value = "pageNow",defaultValue = "1") Integer pageNow,
                          @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize) {
         if (StringUtils.isBlank(projectName)) {
-            return Message.error("projectName is null");
+            return Message.error(NULL_PROJECT_NAME);
         }
         if (!projectPrivilegeService.hasAccessPrivilege(req,projectName)) return Message.error(NO_OPERATION_PERMISSION_MESSAGE);
         PageHelper.startPage(pageNow, pageSize);
@@ -177,7 +177,7 @@ public class ProjectManagerRestfulApi {
                                 @RequestParam(value = "pageNow",defaultValue = "1") Integer pageNow,
                                 @RequestParam(value = "pageSize",defaultValue = "20") Integer pageSize) {
         if (StringUtils.isBlank(projectName)) {
-            return Message.error("projectName is null");
+            return Message.error(NULL_PROJECT_NAME);
         }
         if (StringUtils.isBlank(fileName)) {
             return Message.error("fileName is null");

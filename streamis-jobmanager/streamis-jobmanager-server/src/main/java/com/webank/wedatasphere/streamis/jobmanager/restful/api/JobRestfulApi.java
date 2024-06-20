@@ -94,6 +94,10 @@ public class JobRestfulApi {
 
     private static final String SUCCESS_MSG = "success";
 
+    private static final String TOTAL_PAGE = "totalPage";
+
+    private static final String NOT_EXISTS_JOB = "not exists job ";
+
     @RequestMapping(path = "/list", method = RequestMethod.GET)
     public Message getJobList(HttpServletRequest req,
                               @RequestParam(value = "pageNow", required = false) Integer pageNow,
@@ -126,7 +130,7 @@ public class JobRestfulApi {
             PageHelper.clearPage();
         }
 
-        return Message.ok().data("tasks", pageInfo.getList()).data("totalPage", pageInfo.getTotal());
+        return Message.ok().data("tasks", pageInfo.getList()).data(TOTAL_PAGE, pageInfo.getTotal());
     }
 
     @RequestMapping(path = "/jobInfo", method = RequestMethod.GET)
@@ -211,7 +215,7 @@ public class JobRestfulApi {
             PageInfo<VersionDetailVo> pageInfo = this.streamJobService.getVersionList(jobId);
             if (Objects.nonNull(pageInfo)){
                 result.data("versions", pageInfo.getList());
-                result.data("totalPage", pageInfo.getTotal());
+                result.data(TOTAL_PAGE, pageInfo.getTotal());
             }
         } catch (Exception e){
             result = Message.error("Fail to query job version page (查看任务版本列表失败), message: " + e.getMessage());
@@ -257,7 +261,7 @@ public class JobRestfulApi {
                 StreamJob streamJob = this.streamJobService.getJobById(jobId);
                 jobMap.put(jobId,streamJob);
                 if (streamJob == null) {
-                    return Message.error("not exists job " + jobId);
+                    return Message.error(NOT_EXISTS_JOB + jobId);
                 }
                 if (!streamJobService.isCreator(jobId, userName) &&
                         !this.privilegeService.hasEditPrivilege(req, streamJob.getProjectName())) {
@@ -297,7 +301,7 @@ public class JobRestfulApi {
                 StreamJob streamJob = this.streamJobService.getJobById(jobId);
                 jobMap.put(jobId,streamJob);
                 if (streamJob == null) {
-                    return Message.error("not exists job " + jobId);
+                    return Message.error(NOT_EXISTS_JOB + jobId);
                 }
                 if (!streamJobService.isCreator(jobId, userName) &&
                         !this.privilegeService.hasEditPrivilege(req, streamJob.getProjectName())) {
@@ -418,7 +422,7 @@ public class JobRestfulApi {
         LOG.info("{} try to execute job {}.", userName, jobId);
         StreamJob streamJob = this.streamJobService.getJobById(jobId);
         if(streamJob == null) {
-            return Message.error("not exists job " + jobId);
+            return Message.error(NOT_EXISTS_JOB + jobId);
         } else if(!JobConf.SUPPORTED_MANAGEMENT_JOB_TYPES().getValue().contains(streamJob.getJobType())) {
             return Message.error("Job " + streamJob.getName() + " is not supported to execute.");
         }
@@ -467,7 +471,7 @@ public class JobRestfulApi {
         LOG.info("{} try to kill job {}.", userName, jobId);
         StreamJob streamJob = this.streamJobService.getJobById(jobId);
         if(streamJob == null) {
-            return Message.error("not exists job " + jobId);
+            return Message.error(NOT_EXISTS_JOB + jobId);
         }
         if (!streamJobService.hasPermission(streamJob, userName) &&
                 !this.privilegeService.hasEditPrivilege(req, streamJob.getProjectName())) {
@@ -503,7 +507,7 @@ public class JobRestfulApi {
                 return Message.error("Have no permission to get Job details of StreamJob [" + jobId + "]");
         }
         if(streamJob == null) {
-            return Message.error("not exists job " + jobId);
+            return Message.error(NOT_EXISTS_JOB + jobId);
         }
         return Message.ok().data("details", streamTaskService.getJobDetailsVO(streamJob, version));
     }
@@ -533,7 +537,7 @@ public class JobRestfulApi {
             pageSize = 20;
         }
         StreamTaskPageInfo pageInfo = streamTaskService.queryHistory(jobId, version,pageNow,pageSize);
-        return Message.ok().data("details",  pageInfo.getStreamTaskList()).data("totalPage", pageInfo.getTotal());
+        return Message.ok().data("details",  pageInfo.getStreamTaskList()).data(TOTAL_PAGE, pageInfo.getTotal());
     }
 
     @RequestMapping(path = "/execute/errorMsg", method = RequestMethod.GET)
@@ -746,7 +750,7 @@ public class JobRestfulApi {
         }
         StreamJob streamJob = this.streamJobService.getJobById(jobId);
         if(streamJob == null) {
-            return Message.error("not exists job " + jobId);
+            return Message.error(NOT_EXISTS_JOB + jobId);
         } else if(!JobConf.SUPPORTED_MANAGEMENT_JOB_TYPES().getValue().contains(streamJob.getJobType())) {
             return Message.error("Job " + streamJob.getName() + " is not supported to get progress.");
         }
@@ -827,7 +831,7 @@ public class JobRestfulApi {
         } finally {
             PageHelper.clearPage();
         }
-        return Message.ok().data("list",pageInfo.getList()).data("totalPage", pageInfo.getTotal());
+        return Message.ok().data("list",pageInfo.getList()).data(TOTAL_PAGE, pageInfo.getTotal());
     }
 
     @RequestMapping(path = "/logs", method = RequestMethod.GET)
@@ -847,7 +851,7 @@ public class JobRestfulApi {
         String username = ModuleUserUtils.getOperationUser(req, "view job logs");
         StreamJob streamJob = this.streamJobService.getJobById(jobId);
         if(streamJob == null) {
-            return Message.error("not exists job " + jobId);
+            return Message.error(NOT_EXISTS_JOB + jobId);
         } else if(!JobConf.SUPPORTED_MANAGEMENT_JOB_TYPES().getValue().contains(streamJob.getJobType()) &&
                 "client".equals(logType)) {
             return Message.error("Job " + streamJob.getName() + " is not supported to get client logs.");
@@ -899,7 +903,7 @@ public class JobRestfulApi {
             String username = ModuleUserUtils.getOperationUser(request, "do snapshot of job");
             StreamJob streamJob = this.streamJobService.getJobById(jobId);
             if(streamJob == null) {
-                return Message.error("not exists job " + jobId);
+                return Message.error(NOT_EXISTS_JOB + jobId);
             } else if(!JobConf.SUPPORTED_MANAGEMENT_JOB_TYPES().getValue().contains(streamJob.getJobType())) {
                 return Message.error("Job " + streamJob.getName() + " is not supported to do snapshot.");
             }
