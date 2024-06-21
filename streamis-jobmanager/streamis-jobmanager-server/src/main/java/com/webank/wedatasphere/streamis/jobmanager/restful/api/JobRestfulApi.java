@@ -98,6 +98,12 @@ public class JobRestfulApi {
 
     private static final String NOT_EXISTS_JOB = "not exists job ";
 
+    private static final String SNAPSHOT = "snapshot";
+
+    private static final String DETAILS = "details";
+
+    private static final String JOB_CONTENT = "jobContent";
+
     @RequestMapping(path = "/list", method = RequestMethod.GET)
     public Message getJobList(HttpServletRequest req,
                               @RequestParam(value = "pageNow", required = false) Integer pageNow,
@@ -394,7 +400,7 @@ public class JobRestfulApi {
 
             HashMap<String, Object> inspectResultMap = new HashMap<>();
             inspectResult.forEach(inspect -> inspectResultMap.put(inspect.getInspectName(), inspect));
-            if (!inspectResultMap.containsKey("snapshot")){
+            if (!inspectResultMap.containsKey(SNAPSHOT)){
                 String value = this.streamJobConfService.getJobConfValue(jobId, JobConfKeyConstants.START_AUTO_RESTORE_SWITCH().getValue());
                 String msg;
                 if (value.equals("ON")){
@@ -402,10 +408,10 @@ public class JobRestfulApi {
                 }else {
                     msg ="任务未开启快照，无需检查快照地址";
                 }
-                inspections.add("snapshot");
+                inspections.add(SNAPSHOT);
                 JobSnapshotInspectVo jobSnapshotInspectVo =new JobSnapshotInspectVo();
                 jobSnapshotInspectVo.setPath(msg);
-                inspectResultMap.put("snapshot",jobSnapshotInspectVo);
+                inspectResultMap.put(SNAPSHOT,jobSnapshotInspectVo);
             }
             inspectResultMap.put("inspections", inspections);
             result.setData(inspectResultMap);
@@ -509,7 +515,7 @@ public class JobRestfulApi {
         if(streamJob == null) {
             return Message.error(NOT_EXISTS_JOB + jobId);
         }
-        return Message.ok().data("details", streamTaskService.getJobDetailsVO(streamJob, version));
+        return Message.ok().data(DETAILS, streamTaskService.getJobDetailsVO(streamJob, version));
     }
 
     @RequestMapping(path = "/execute/history", method = RequestMethod.GET)
@@ -537,7 +543,7 @@ public class JobRestfulApi {
             pageSize = 20;
         }
         StreamTaskPageInfo pageInfo = streamTaskService.queryHistory(jobId, version,pageNow,pageSize);
-        return Message.ok().data("details",  pageInfo.getStreamTaskList()).data(TOTAL_PAGE, pageInfo.getTotal());
+        return Message.ok().data(DETAILS,  pageInfo.getStreamTaskList()).data(TOTAL_PAGE, pageInfo.getTotal());
     }
 
     @RequestMapping(path = "/execute/errorMsg", method = RequestMethod.GET)
@@ -553,7 +559,7 @@ public class JobRestfulApi {
             return Message.error("Have no permission to get Job details of StreamJob [" + jobId + "]");
         }
         StreamTask details = streamTaskService.queryErrorCode(jobId);
-        return Message.ok().data("details", details);
+        return Message.ok().data(DETAILS, details);
     }
 
     private Message withStreamJob(HttpServletRequest req, String projectName,
@@ -772,7 +778,7 @@ public class JobRestfulApi {
             return Message.error("Have no permission to view job details of StreamJob [" + jobId + "]");
         }
         StreamisTransformJobContent jobContent = streamJobService.getJobContent(jobId, version);
-        return Message.ok().data("jobContent", jobContent).data("editEnable",JobConf.JOB_CONTENT_EDIT_ENABLE().getHotValue());
+        return Message.ok().data(JOB_CONTENT, jobContent).data("editEnable",JobConf.JOB_CONTENT_EDIT_ENABLE().getHotValue());
     }
 
     @RequestMapping(path = "/updateContent", method = RequestMethod.POST)
@@ -793,7 +799,7 @@ public class JobRestfulApi {
             boolean isHighAvailable = contentRequest.isHighAvailable();
             String highAvailableMessage = contentRequest.getHighAvailableMessage();
             StreamisTransformJobContent jobContent = streamJobService.updateArgs(jobId, version,null,isHighAvailable,highAvailableMessage);
-            return Message.ok().data("jobContent", jobContent);
+            return Message.ok().data(JOB_CONTENT, jobContent);
         } else {
             if (!(boolean) JobConf.JOB_CONTENT_EDIT_ENABLE().getHotValue()){
                 return Message.error("job args cannot be changed,please contact the admin for advice");
@@ -803,7 +809,7 @@ public class JobRestfulApi {
                 return Message.error("args length is too long, please less than "+ hotValue);
             }
             StreamisTransformJobContent jobContent = streamJobService.updateArgs(jobId, version,args,false,null);
-            return Message.ok().data("jobContent", jobContent);
+            return Message.ok().data(JOB_CONTENT, jobContent);
         }
     }
 
