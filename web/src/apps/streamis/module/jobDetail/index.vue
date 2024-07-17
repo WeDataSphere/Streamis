@@ -32,8 +32,8 @@ export default {
   },
   methods: {
     getDetail() {
-      const { id, version } = this.$route.params
-      const query = `jobId=${id}&version=${version}`
+      const { id, version, status } = this.$route.params
+      const query = status === 5 ? `jobId=${id}&version=${version}` : `jobId=${id}`
       api
         .fetch(`streamis/streamJobManager/job/jobContent?${query}`, 'get')
         .then(res => {
