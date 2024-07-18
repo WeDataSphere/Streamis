@@ -23,7 +23,8 @@ public class RpcAuthConfig {
     /**
      * Token code
      */
-    private String tokenCode = "STREAM-LOG";
+//    private String tokenCode = "STREAM-LOG";
+    private String tokenCode = "STREAMIS-gLmtNQyAZCsovXQvhep";
 
     public RpcAuthConfig(){
 
