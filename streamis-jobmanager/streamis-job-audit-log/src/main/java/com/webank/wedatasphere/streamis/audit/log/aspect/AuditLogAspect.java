@@ -361,7 +361,7 @@ public class AuditLogAspect {
             List<Long> jobIds = jobIdDouble.stream().map(Math::round).collect(Collectors.toList());
             List<String> jobNames = auditLogService.getBulkJobNameByIds(jobIds);
             return String.join(",", jobNames);
-        } else if (req.getRequestURI().equals(InterfaceDescriptionEnum.JOB_SNAPSHOT.getUrl())){
+        } else if (req.getRequestURI().startsWith(InterfaceDescriptionEnum.JOB_SNAPSHOT.getUrl())){
             if (requestParams.get(JOB_ID) != null){
                 String jobIdStr = requestParams.get(JOB_ID).toString();
                 Long jobId = Long.valueOf(jobIdStr);
