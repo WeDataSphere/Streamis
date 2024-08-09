@@ -77,6 +77,8 @@ public enum InterfaceDescriptionEnum {
     public static String getDescriptionByUrl(String url) {
         if (urlDescriptionMap.containsKey(url)) {
             return urlDescriptionMap.get(url);
+        }else if (url.startsWith(InterfaceDescriptionEnum.JOB_SNAPSHOT.getUrl())) {
+            return InterfaceDescriptionEnum.JOB_SNAPSHOT.getDescription();
         }
         for (InterfaceDescriptionEnum interfaceDescription : InterfaceDescriptionEnum.values()) {
             if (matchesUrl(interfaceDescription.getUrl(), url)) {
