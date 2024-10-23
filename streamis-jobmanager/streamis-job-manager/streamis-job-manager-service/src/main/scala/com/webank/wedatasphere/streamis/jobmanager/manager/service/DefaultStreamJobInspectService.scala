@@ -12,7 +12,7 @@ import com.webank.wedatasphere.streamis.jobmanager.manager.dao.{StreamJobMapper,
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.{StreamJob, StreamJobVersion, StreamJobVersionFiles}
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.vo.{JobHighAvailableVo, JobInspectVo, JobListInspectVo, JobSnapshotInspectVo, JobVersionInspectVo}
 import com.webank.wedatasphere.streamis.jobmanager.manager.utils.SourceUtils
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.apache.linkis.common.exception.ErrorException
 import org.apache.linkis.common.utils.{JsonUtils, Logging, Utils}
 import org.springframework.beans.factory.annotation.Autowired
@@ -96,9 +96,9 @@ class DefaultStreamJobInspectService extends StreamJobInspectService with Loggin
    */
   private def snapshotInspect(streamJob: StreamJob): JobSnapshotInspectVo = {
     Option(this.streamJobConfMapper.getRawConfValue(streamJob.getId, JobConfKeyConstants.SAVEPOINT.getValue + "path")) match {
-      case Some(path) =>
+      case path if (path.isDefined && StringUtils.isNotBlank(path.get)) =>
         val inspectVo = new JobSnapshotInspectVo
-        inspectVo.setPath(new URI(path).toString)
+        inspectVo.setPath(new URI(path.get).toString)
         inspectVo
       case _ => this.streamJobConfMapper.getRawConfValue(streamJob.getId, JobConfKeyConstants.START_AUTO_RESTORE_SWITCH.getValue) match {
         case "ON" =>

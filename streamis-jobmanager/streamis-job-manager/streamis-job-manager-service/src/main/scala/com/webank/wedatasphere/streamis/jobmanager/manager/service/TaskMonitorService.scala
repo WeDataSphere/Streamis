@@ -27,10 +27,11 @@ import com.webank.wedatasphere.streamis.jobmanager.launcher.job.manager.JobLaunc
 import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.job.jobInfo.{EngineConnJobInfo, LinkisJobInfo}
 import com.webank.wedatasphere.streamis.jobmanager.manager.alert.{AlertLevel, Alerter}
 import com.webank.wedatasphere.streamis.jobmanager.manager.dao.{StreamJobMapper, StreamRegisterMapper, StreamTaskMapper}
-import com.webank.wedatasphere.streamis.jobmanager.manager.entity.{StreamJob, StreamTask}
-import com.webank.wedatasphere.streamis.jobmanager.manager.utils.StreamTaskUtils
+import com.webank.wedatasphere.streamis.jobmanager.manager.entity.{MetaJsonInfo, StreamJob, StreamTask}
+import com.webank.wedatasphere.streamis.jobmanager.manager.utils.{StreamTaskUtils}
 import com.webank.wedatasphere.streamis.errorcode.handler.StreamisErrorCodeHandler
 import com.webank.wedatasphere.streamis.jobmanager.manager.constrants.JobConstrants
+import com.webank.wedatasphere.streamis.jobmanager.launcher.job.utils.JobUtils
 
 import javax.annotation.{PostConstruct, PreDestroy, Resource}
 import org.apache.commons.lang.exception.ExceptionUtils
@@ -120,7 +121,7 @@ class TaskMonitorService extends Logging {
     streamTasks.filter(shouldMonitor).foreach { streamTask =>
       val job = streamJobMapper.getJobById(streamTask.getJobId)
       if(!JobConf.SUPPORTED_MANAGEMENT_JOB_TYPES.getValue.contains(job.getJobType)) {
-        val userList = getAlertUsers(job)
+        val userList = getAlertUsers(job, streamTask)
         //user
         val alertMsg = s"Spark Streaming应用[${job.getName}]已经超过 ${Utils.msDurationToString(System.currentTimeMillis - streamTask.getLastUpdateTime.getTime)} 没有更新状态, 请及时确认应用是否正常！"
         alert(jobService.getAlertLevel(job), alertMsg, userList, streamTask)
@@ -175,7 +176,7 @@ class TaskMonitorService extends Logging {
                 restartJob(job,streamTask)
               }
           }
-          val userList = getAlertUsers(job)
+          val userList = getAlertUsers(job, streamTask)
           alert(jobService.getAlertLevel(job), alertMsg, userList, streamTask)
         }
       }
@@ -192,7 +193,7 @@ class TaskMonitorService extends Logging {
     } {
       case e: Exception =>
         warn(s"Fail to reLaunch the StreamisJob [${job.getName}]", e)
-        val userList = getAlertUsers(job)
+        val userList = getAlertUsers(job, null)
         val alertMsg = s"Fail to reLaunch the StreamisJob [${job.getName}],please be noticed!"
         alert(AlertLevel.MAJOR, alertMsg, userList, streamTask)
     }
@@ -208,7 +209,8 @@ class TaskMonitorService extends Logging {
     jobClient.getJobInfo
   }
 
-  protected def getAlertUsers(job: StreamJob): util.List[String] = {
+  protected def getAlertUsers(job: StreamJob, streamTask: StreamTask): util.List[String] = {
+    // fist, get alert users from job config in db
     val allUsers = new util.LinkedHashSet[String]()
     val alertUsers = jobService.getAlertUsers(job)
     var isValid = false
@@ -223,7 +225,31 @@ class TaskMonitorService extends Logging {
         allUsers.add(job.getSubmitUser)
       }
     }
-    if (!isValid){
+    if (!isValid && null != streamTask) {
+      // second, get alert users from job startup config
+      val metaJsonInfo = Utils.tryCatch {JobUtils.gson.fromJson(streamTask.getJobStartConfig, classOf[MetaJsonInfo])} {
+        case e: Exception =>
+          logger.error(s"parse jobStartConfig : ${streamTask.getJobStartConfig} error", e)
+          null
+      }
+      if (null != metaJsonInfo) {
+        val jobStartAlertUsers = metaJsonInfo.getJobConfig.getOrDefault(JobConstrants.PRODUCE_PARAM, null) match {
+          case map: util.Map[String, Any] =>
+            map.getOrDefault(JobConfKeyConstants.ALERT_USER.getValue, "").toString
+          case _ => ""
+        }
+        if (StringUtils.isNotBlank(jobStartAlertUsers)) {
+          jobStartAlertUsers.split(",").foreach(user => {
+            if (StringUtils.isNotBlank(user) && !user.toLowerCase().contains("hduser")) {
+              isValid = true
+              allUsers.add(user)
+            }
+          })
+        }
+      }
+    }
+
+    if (!isValid) {
       allUsers.add(job.getSubmitUser)
       allUsers.add(job.getCreateBy)
     }
