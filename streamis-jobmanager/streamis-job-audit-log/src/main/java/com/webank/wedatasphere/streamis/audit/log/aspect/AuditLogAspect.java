@@ -192,7 +192,11 @@ public class AuditLogAspect {
         List<T> result = new ArrayList<>();
         if (obj instanceof List<?>) {
             for (Object o : (List<?>) obj) {
-                result.add(clazz.cast(o));
+                if (clazz.isInstance(o)) {
+                    result.add(clazz.cast(o));
+                } else if (null != o) {
+                    LOG.warn("discarded {}", o.getClass());
+                }
             }
             return result;
         }
