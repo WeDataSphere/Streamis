@@ -27,7 +27,7 @@ import javax.annotation.PostConstruct
  * created by cooperyang on 2021/7/19
  * Description:
  */
-//@Component
+@Component
 class StreamisJobManagerReceiverChooser extends ReceiverChooser{
 
   @Autowired
@@ -36,7 +36,7 @@ class StreamisJobManagerReceiverChooser extends ReceiverChooser{
 
   private var receiver: Option[StreamisJobManagerReceiver] = _
 
-//  @PostConstruct
+  @PostConstruct
   def init():Unit = {
     receiver = Some(new StreamisJobManagerReceiver(jobService))
   }
