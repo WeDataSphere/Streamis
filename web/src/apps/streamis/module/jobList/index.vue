@@ -1647,7 +1647,7 @@ export default {
   }
 }
 .table {
-  /deep/ .ivu-table-tbody {
+  ::v-deep .ivu-table-tbody {
     tr:first-child {
       td:first-child {
         div:first-child {
@@ -1664,11 +1664,11 @@ export default {
   color: #ff9900;
 }
 
-/deep/.ivu-table .warning-row td{
+::v-deep.ivu-table .warning-row td{
   background-color: #ff9900;
   border-right: none;
 }
-/deep/.ivu-table .disabled-row td{
+::v-deep.ivu-table .disabled-row td{
   background-color: #eee;
   border-right: none;
 }
