@@ -23,7 +23,7 @@
         ]
     },
     "dependencies": {
-        "axios": "1.6.4",
+        "axios": "1.7.4",
         "babel-polyfill": "6.26.0",
         "core-js": "2.6.11",
         "dexie": "3.0.4",
