@@ -31,3 +31,4 @@ streamis-appconn/target
 /streamis-jobmanager/streamis-job-errorcode/target/
 /streamis-jobmanager/streamis-job-audit-log/target/
 **/.flattened-pom.xml
+*.patch
