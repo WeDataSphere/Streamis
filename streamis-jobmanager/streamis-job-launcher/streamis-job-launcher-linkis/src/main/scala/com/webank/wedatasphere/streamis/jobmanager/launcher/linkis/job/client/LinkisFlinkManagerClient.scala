@@ -70,6 +70,7 @@ class LinkisFlinkManagerClient extends FlinkManagerClient with Logging {
     initProperties.put(JobLauncherConfiguration.FLINK_MANAGER_EC_KEY.getValue, true.toString)
     initProperties.put(JobLauncherConfiguration.LINKIS_EC_EXPIRE_TIME_KEY.getValue, JobLauncherConfiguration.FLINKK_MANAGER_EXIT_TIME.getHotValue().toString)
     initProperties.put(JobLauncherConfiguration.LINKIS_EC_SUPPORT_PARALLEM, true.toString)
+    initProperties.put("classloader.resolve-order", JobLauncherConfiguration.FLINK_MANAGER_EC_CLASSLOADER_RESOLVE_ORDER.getValue)
 
     if (StringUtils.isNotBlank(JobLauncherConfiguration.FLINK_MANAGER_EXTRA_INIT_CONFIGS.getValue)) {
       JobLauncherConfiguration.FLINK_MANAGER_EXTRA_INIT_CONFIGS.getValue.split(JobConstants.DELIMITER_COMMA).foreach(s => {
