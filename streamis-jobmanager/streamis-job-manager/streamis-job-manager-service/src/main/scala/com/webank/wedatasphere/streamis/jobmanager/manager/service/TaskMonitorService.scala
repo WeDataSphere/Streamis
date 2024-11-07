@@ -216,12 +216,12 @@ class TaskMonitorService extends Logging {
     var isValid = false
     if (alertUsers!= null) {
       alertUsers.foreach(user => {
-        if (StringUtils.isNotBlank(user) && !user.toLowerCase().contains("hduser")) {
+        if (StringUtils.isNotBlank(user) && !user.toLowerCase().contains("hduser") && !"hadoop".equals(user)) {
           isValid = true
           allUsers.add(user)
         }
       })
-      if (!allUsers.contains(job.getSubmitUser)) {
+      if (!allUsers.contains(job.getSubmitUser) && !"hadoop".equals(job.getSubmitUser)) {
         allUsers.add(job.getSubmitUser)
       }
     }
@@ -250,8 +250,16 @@ class TaskMonitorService extends Logging {
     }
 
     if (!isValid) {
-      allUsers.add(job.getSubmitUser)
-      allUsers.add(job.getCreateBy)
+      if (!"hadoop".equals(job.getSubmitUser)) {
+        allUsers.add(job.getSubmitUser)
+      }
+      if (!"hadoop".equals(job.getCreateBy)) {
+        allUsers.add(job.getCreateBy)
+      }
+    }
+    if (allUsers.isEmpty) {
+      logger.error("Got invalid alert users for job : {}, will alert to admin users.", job.getName)
+      allUsers.addAll(getAdminAlertUsers());
     }
     new util.ArrayList[String](allUsers)
   }
