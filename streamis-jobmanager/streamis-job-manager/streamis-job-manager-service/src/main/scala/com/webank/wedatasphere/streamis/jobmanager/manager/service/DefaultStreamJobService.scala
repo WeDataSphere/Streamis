@@ -18,8 +18,7 @@ package com.webank.wedatasphere.streamis.jobmanager.manager.service
 import java.util
 import java.util.{Date, List, Map}
 import com.github.pagehelper.PageInfo
-import com.webank.wedatasphere.streamis.jobmanager.launcher.conf.JobConfKeyConstants
-import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.JobConf
+import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.{JobConf, JobConfKeyConstants}
 import com.webank.wedatasphere.streamis.jobmanager.launcher.job.constants.JobConstants
 import com.webank.wedatasphere.streamis.jobmanager.launcher.job.exception.{JobCreateErrorException, JobErrorException, JobFetchErrorException}
 import com.webank.wedatasphere.streamis.jobmanager.launcher.service.StreamJobConfService

@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.streamis.jobmanager.manager.transform.impl
-import com.webank.wedatasphere.streamis.jobmanager.launcher.conf.JobConfKeyConstants
 import com.webank.wedatasphere.streamis.jobmanager.launcher.job.LaunchJob
+import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.JobConfKeyConstants
 import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.conf.JobLauncherConfiguration.VAR_FLINK_SAVEPOINT_PATH
 import com.webank.wedatasphere.streamis.jobmanager.manager.transform.impl.FlinkSavepointConfigTransform.SAVE_POINT_PREFIX
 import org.apache.commons.lang3.StringUtils

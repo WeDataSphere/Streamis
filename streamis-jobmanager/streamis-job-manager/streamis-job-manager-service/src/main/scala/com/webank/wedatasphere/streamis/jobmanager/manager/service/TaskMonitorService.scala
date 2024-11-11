@@ -19,16 +19,15 @@ import java.util
 import java.util.{Date, Optional, function}
 import java.util.concurrent.{CompletableFuture, ExecutorService, Future, TimeUnit}
 import com.webank.wedatasphere.streamis.jobmanager.launcher.JobLauncherAutoConfiguration
-import com.webank.wedatasphere.streamis.jobmanager.launcher.conf.JobConfKeyConstants
 import com.webank.wedatasphere.streamis.jobmanager.launcher.dao.StreamJobConfMapper
 import com.webank.wedatasphere.streamis.jobmanager.launcher.job.JobInfo
-import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.JobConf
+import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.{JobConf, JobConfKeyConstants}
 import com.webank.wedatasphere.streamis.jobmanager.launcher.job.manager.JobLaunchManager
 import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.job.jobInfo.{EngineConnJobInfo, LinkisJobInfo}
 import com.webank.wedatasphere.streamis.jobmanager.manager.alert.{AlertLevel, Alerter}
 import com.webank.wedatasphere.streamis.jobmanager.manager.dao.{StreamJobMapper, StreamRegisterMapper, StreamTaskMapper}
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.{MetaJsonInfo, StreamJob, StreamTask}
-import com.webank.wedatasphere.streamis.jobmanager.manager.utils.{StreamTaskUtils}
+import com.webank.wedatasphere.streamis.jobmanager.manager.utils.StreamTaskUtils
 import com.webank.wedatasphere.streamis.errorcode.handler.StreamisErrorCodeHandler
 import com.webank.wedatasphere.streamis.jobmanager.manager.constrants.JobConstrants
 import com.webank.wedatasphere.streamis.jobmanager.launcher.job.utils.JobUtils
