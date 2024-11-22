@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.streamis.jobmanager.launcher.utils;
 
-import com.webank.wedatasphere.streamis.jobmanager.launcher.conf.JobConfKeyConstants;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.conf.JobConstants;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.entity.JobConfValue;
+import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.JobConfKeyConstants;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.streamis.jobmanager.restful.api;
 
-import com.webank.wedatasphere.streamis.jobmanager.launcher.conf.JobConfKeyConstants;
+import com.webank.wedatasphere.streamis.jobmanager.launcher.job.conf.JobConfKeyConstants;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.linkis.conf.JobLauncherConfiguration;
 import com.webank.wedatasphere.streamis.jobmanager.launcher.service.StreamJobConfService;
 import com.webank.wedatasphere.streamis.jobmanager.manager.entity.StreamJob;
