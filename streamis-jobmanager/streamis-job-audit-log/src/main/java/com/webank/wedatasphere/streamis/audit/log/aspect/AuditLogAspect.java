@@ -167,15 +167,23 @@ public class AuditLogAspect {
             //如果是批量文件上传
             if (value instanceof List) {
                 try {
-                    List<MultipartFile> multipartFiles = castList(value, MultipartFile.class);
-                    if (multipartFiles != null) {
-                        List<String> fileNames = new ArrayList<>();
-                        for (MultipartFile file : multipartFiles) {
-                            fileNames.add(file.getOriginalFilename());
-                        }
-
-                        requestParams.put(paramNames[i], fileNames);
+                    List<Object> tmpList = (List<Object>) value;
+                    if (tmpList.size() == 0) {
+                        requestParams.put(paramNames[i], value);
                         break;
+                    }
+                    Object tmpV1 = tmpList.get(0);
+                    if (MultipartFile.class.isInstance(tmpV1)) {
+                        List<MultipartFile> multipartFiles = castList(value, MultipartFile.class);
+                        if (multipartFiles != null) {
+                            List<String> fileNames = new ArrayList<>();
+                            for (MultipartFile file : multipartFiles) {
+                                fileNames.add(file.getOriginalFilename());
+                            }
+
+                            requestParams.put(paramNames[i], fileNames);
+                            break;
+                        }
                     }
                 } catch (ClassCastException e) {
                     LOG.warn("buildRequestParam: " + value + " failed. " + e.getMessage(), e);
