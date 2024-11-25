@@ -1665,11 +1665,11 @@ export default {
   color: #ff9900;
 }
 
-::v-deep.ivu-table .warning-row td{
+::v-deep .ivu-table .warning-row td{
   background-color: #ff9900;
   border-right: none;
 }
-::v-deep.ivu-table .disabled-row td{
+::v-deep .ivu-table .disabled-row td{
   background-color: #eee;
   border-right: none;
 }
