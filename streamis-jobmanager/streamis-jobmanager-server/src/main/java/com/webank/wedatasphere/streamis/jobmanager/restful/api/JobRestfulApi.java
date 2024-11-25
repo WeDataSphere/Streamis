@@ -394,7 +394,7 @@ public class JobRestfulApi {
                 inspections = inspectResult.stream().map(JobInspectVo::getInspectName)
                         .collect(Collectors.toList());
             } catch (Exception e){
-                LOG.warn(e.getMessage());
+                LOG.warn(e.getMessage(), e);
                 return Message.error("Fail to inspect job " + jobId + " of the execution(任务执行前检查失败), message: " + e.getMessage());
             }
 
