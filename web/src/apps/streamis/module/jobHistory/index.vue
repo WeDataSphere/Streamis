@@ -202,8 +202,9 @@ export default {
   },
   methods: {
     getDatas() {
-      const { id, version } = this.$route.params || {}
-      const queries = `?jobId=${id}&version=${version}&pageNow=${this.page.current}&pageSize=${this.page.size}`
+      const { id, version, lastVersion, status } = this.$route.params
+      const useVersion = [5, 8, 9].includes(status) ? version : lastVersion
+      const queries = `?jobId=${id}&version=${useVersion || version}&pageNow=${this.page.current}&pageSize=${this.page.size}`
       this.loading = true
       api
         .fetch('streamis/streamJobManager/job/execute/history' + queries, 'get')
@@ -339,7 +340,7 @@ export default {
   }
 }
 .full {
-  ::v-deep.ivu-modal{
+  ::v-deep .ivu-modal{
     width: 100vw !important;
     height: 100vh;
     min-height: 430px;
@@ -348,7 +349,7 @@ export default {
       height: 100%;
     }
   }
-  ::v-deeptextarea{
+  ::v-deep textarea{
    height: calc(100vh - 200px) !important;
    min-height: 200px;
    max-height: calc(100vh - 200px) !important;
