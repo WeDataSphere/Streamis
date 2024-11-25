@@ -172,7 +172,7 @@ export default {
 
       api
         .fetch(
-          `streamis/streamJobManager/job/details?jobId=${id}&version=${useVersion}`,
+          `streamis/streamJobManager/job/details?jobId=${id}&version=${useVersion || version}`,
           'get'
         )
         .then(res => {

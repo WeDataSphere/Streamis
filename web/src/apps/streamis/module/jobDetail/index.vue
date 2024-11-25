@@ -34,7 +34,7 @@ export default {
     getDetail() {
       const { id, version, lastVersion, status } = this.$route.params
       const useVersion = [5, 8, 9].includes(status) ? version : lastVersion
-      const query = `jobId=${id}&version=${useVersion}`
+      const query = `jobId=${id}&version=${useVersion || version}`
       api
         .fetch(`streamis/streamJobManager/job/jobContent?${query}`, 'get')
         .then(res => {
