@@ -50,6 +50,10 @@
                     <artifactId>dss-common</artifactId>
                     <groupId>com.webank.wedatasphere.dss</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>commons-beanutils</artifactId>
+                    <groupId>commons-beanutils</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -75,6 +79,10 @@
             <artifactId>dss-common</artifactId>
             <version>${dss.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
         </dependency>
     </dependencies>
     <build>
