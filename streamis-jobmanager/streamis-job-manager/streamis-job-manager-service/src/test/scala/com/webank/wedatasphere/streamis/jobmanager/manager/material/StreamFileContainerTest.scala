@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.streamis.jobmanager.manager.material
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 
 class StreamFileContainerTest {

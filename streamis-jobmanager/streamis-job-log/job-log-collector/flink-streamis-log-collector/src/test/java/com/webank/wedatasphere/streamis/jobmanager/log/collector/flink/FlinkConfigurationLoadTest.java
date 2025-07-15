@@ -2,7 +2,7 @@ package com.webank.wedatasphere.streamis.jobmanager.log.collector.flink;
 
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.GlobalConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Enumeration;
 import java.util.Objects;

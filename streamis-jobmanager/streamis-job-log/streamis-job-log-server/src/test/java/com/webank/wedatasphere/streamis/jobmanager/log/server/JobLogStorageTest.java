@@ -13,7 +13,7 @@ import com.webank.wedatasphere.streamis.jobmanager.log.server.storage.loadbalanc
 import com.webank.wedatasphere.streamis.jobmanager.log.server.storage.utils.MemUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.conf.BDPConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
