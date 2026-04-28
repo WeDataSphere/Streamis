@@ -76,6 +76,7 @@
         <jetty.version>9.4.54.v20240208</jetty.version>
         <spring-security.vertion>6.4.4</spring-security.vertion>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <netty.version>4.1.125.Final</netty.version>
     </properties>
 
 
@@ -209,6 +210,18 @@
                 <artifactId>junit-vintage-engine</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
