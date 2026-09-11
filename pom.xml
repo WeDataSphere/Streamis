@@ -45,8 +45,8 @@
     </modules>
 
     <properties>
-        <revision>0.4.6-wedatasphere-SNAPSHOT</revision>
-        <linkis.version>1.12.0-wds</linkis.version>
+        <revision>0.4.8-wedatasphere-SNAPSHOT</revision>
+        <linkis.version>2.1.1</linkis.version>
         <junit.version>5.13.3</junit.version>
         <dss.version>1.12.0-SNAPSHOT</dss.version>
         <scala.version>2.11.12</scala.version>
